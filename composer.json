@@ -1,0 +1,13 @@
+{
+    "require": {
+        "slim/slim": "^3.9",
+        "illuminate/database": "^5.5",
+        "fproject/php-jwt": "^4.0",
+        "monolog/monolog": "^1.23"
+    },
+    "autoload": {
+        "psr-4": {
+          "": "src/"
+        }
+    }
+}
