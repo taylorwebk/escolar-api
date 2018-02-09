@@ -5,7 +5,7 @@ class Admin extends Model
 {
     protected $guarded = [];
     protected $table = 'admin';
-    protected $hidden = ['password'];
+    protected $hidden = ['password', 'id'];
     public $timestamps = false;
 }
 

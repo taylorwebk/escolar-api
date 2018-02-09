@@ -32,13 +32,13 @@ class Response
   {
     $response['code'] = 400;
     $response['devmsg'] = $devmsg;
-    $response['usrmsg'] = 'Erro desconocido, por favor contacte al desarrollador, codigo: 400';
+    $response['usrmsg'] = 'Error desconocido, por favor contacte al desarrollador, codigo: 400';
     return $response;
   }
   public static function InternarServerError($devmsg) {
     $response['code'] = 500;
     $response['devmsg'] = $devmsg;
-    $response['usrmsg'] = 'Erro desconocido, por favor contacte al desarrollador, codigo: 500';
+    $response['usrmsg'] = 'Error desconocido, por favor contacte al desarrollador, codigo: 500';
     return $response;
   }
 }
