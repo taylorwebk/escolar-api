@@ -4,6 +4,7 @@ require './vendor/autoload.php';
 
 define("PROJECTPATH", __DIR__);
 define("IP", $_SERVER['SERVER_NAME']);
+define("PRIVATEKEY", "ISEEDEADPEOPLE");
 
 $dbconfig = parse_ini_file(PROJECTPATH . '/src/Database/config.db');
 
@@ -21,6 +22,14 @@ $config['db']['collation'] = 'utf8_general_ci';
 $app = new \Slim\App(['settings' => $config]);
 
 $container = $app->getContainer();
+/*$c['errorHandler'] = function ($c) {
+  return function ($request, $response, $exception) use ($c) {
+    $data;
+    $data['status'] = "error";
+    $data['content'] = "Fatal Error.... Unknow Error";
+    return $c['response']->withJson($data);
+  };
+};*/
 $container['logger'] = function($c) {
     $logger = new \Monolog\Logger('my_logger');
     $file_handler = new \Monolog\Handler\StreamHandler('./logs/app.log');

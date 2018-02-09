@@ -32,6 +32,7 @@ create table curso(
   id integer not null auto_increment,
   nro tinyint,
   paralelo enum('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'),
+  estado boolean default 0,
   primary key(id)
 );
 create table gestion(
@@ -61,12 +62,29 @@ create table materia(
   nombre varchar(63),
   primary key(id)
 );
-create table periodo(
+create table hora(
   id integer not null auto_increment,
-  nro integer,
   ini time,
   fin time,
   primary key(id)
+);
+create table dia(
+  id integer not null auto_increment,
+  literal varchar(63),
+  primary key(id)
+);
+create table periodo(
+  id integer not null auto_increment,
+  nro integer,
+  hora_id integer not null,
+  dia_id integer not null,
+  primary key(id),
+  foreign key(hora_id)
+  references hora(id)
+  on delete cascade,
+  foreign key(dia_id)
+  references dia(id)
+  on delete cascade
 );
 create table profesor(
   id integer not null auto_increment,
@@ -79,10 +97,14 @@ create table profesor(
 );
 create table inscribe(
   id integer not null auto_increment,
+  estudiante_id integer not null,
   curso_id integer not null,
   gestion_id integer not null,
   fecha date,
   primary key(id),
+  foreign key(estudiante_id)
+  references estudiante(id)
+  on delete cascade,
   foreign key(curso_id)
   references curso(id)
   on delete cascade,
@@ -187,3 +209,15 @@ insert into materia (nombre) values
 ("Filosofía"),
 ("Literatura"),
 ("Física Química");
+insert into dia (literal) values
+("Lunes"), ("Martes"), ("Miércoles"), ("Jueves"), ("Viernes"), ("Sábado");
+insert into curso (nro, paralelo) values
+(1, 'A'), (1, 'B'), (1, 'C'), (1, 'D'), (1, 'E'), (1, 'F'), (1, 'G'), (1, 'H'),
+(2, 'A'), (2, 'B'), (2, 'C'), (2, 'D'), (2, 'E'), (2, 'F'), (2, 'G'), (2, 'H'),
+(3, 'A'), (3, 'B'), (3, 'C'), (3, 'D'), (3, 'E'), (3, 'F'), (3, 'G'), (3, 'H'),
+(4, 'A'), (4, 'B'), (4, 'C'), (4, 'D'), (4, 'E'), (4, 'F'), (4, 'G'), (4, 'H'),
+(5, 'A'), (5, 'B'), (5, 'C'), (5, 'D'), (5, 'E'), (5, 'F'), (5, 'G'), (5, 'H'),
+(6, 'A'), (6, 'B'), (6, 'C'), (6, 'D'), (6, 'E'), (6, 'F'), (6, 'G'), (6, 'H');
+insert into bimestre (nro) values(1),(2),(3),(4);
+insert into gestion (nro) values(2018);
+insert into bimestre_gestion (gestion_id, bimestre_id) values (1, 1);
