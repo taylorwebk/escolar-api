@@ -4,9 +4,15 @@ use \Psr\Http\Message\ResponseInterface as Response;
 use \Controllers\AdminC;
 
 $app->group('/admin', function () use ($app) {
-    $app->get('/cursos', function (Request $req, Response $res, $args) {
+    $app->get('/cursos', function (Request $req, Response $res) {
         $admin = $req->getAttribute('admin');
         $result = AdminC::GetCourses($admin);
+        return $res->withJson($result);
+    });
+    $app->post('/cursos', function (Request $req, Response $res)
+    {
+        $admin = $req->getAttribute('admin');
+        $result = AdminC::EnableCourses($admin, $req->getParsedBody());
         return $res->withJson($result);
     });
 

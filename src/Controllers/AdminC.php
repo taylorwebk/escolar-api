@@ -61,4 +61,30 @@ class AdminC
             $cursos
         );
     }
+    public static function EnableCourses($admin, $data)
+    {
+        $fields = ['habilitados'];
+        if (!Utils::validateData($data, $fields)) {
+            return Response::BadRequest(Utils::implodeFields($fields));
+        }
+        if (gettype($data['habilitados']) != 'array') {
+            return Response::BadRequest('El campo habilitados debe ser un Array');
+        }
+        $cursos = Curso::all();
+        foreach ($cursos as $curso) {
+            if (in_array($curso->id, $data['habilitados'])) {
+                $curso->estado = 1;
+                $curso->save();
+            } else {
+                $curso->estado = 0;
+                $curso->save();
+            }
+        }
+        return Response::OKWhitToken(
+            'Cursos habilitados y deshabilitados correctamente',
+            'Cambios guardados...',
+            Utils::generateToken($admin->id, $admin->ci),
+            $cursos
+        );
+    }
 }
