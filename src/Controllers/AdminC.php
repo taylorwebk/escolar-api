@@ -62,6 +62,21 @@ class AdminC
     public static function GetCourses($admin)
     {
         $cursos = Curso::all();
+        $cursos = $cursos->reduce(function($carry, $item) {
+            $par = [
+                'id'        => $item->id,
+                'paralelo'  => $item->paralelo,
+                'estado'    => $item->estado
+            ];
+            if (!Utils::inMultiarray($item->nro, $carry)) {
+                array_push($carry, [
+                    'curso' => $item->nro,
+                    'paralelos' => []
+                ]);
+            }
+            array_push($carry[count($carry) - 1]['paralelos'], $par);
+            return $carry;
+        }, []);
         $tokenstr = Utils::generateToken($admin->id, $admin->ci);
         return Response::OKWhitToken(
             'Cursos obtenido correctamente',
