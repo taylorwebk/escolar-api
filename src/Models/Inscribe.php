@@ -1,0 +1,13 @@
+<?php
+namespace Models;
+use Illuminate\Database\Eloquent\Model;
+class Inscribe extends Model
+{
+    protected $guarded = [];
+    protected $table = 'inscribe';
+    public $timestamps = false;
+/*     public function apoderado() {
+      return $this->belongsTo('\Models\Apoderado');
+    } */
+}
+

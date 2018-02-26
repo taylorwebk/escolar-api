@@ -20,6 +20,7 @@ create table estudiante(
   nombres varchar(127),
   appat varchar(127),
   apmat varchar(127),
+  username varchar(127),
   dir varchar(255),
   nrocel varchar(127),
   password varchar(257),
@@ -220,4 +221,4 @@ insert into curso (nro, paralelo) values
 (6, 'A'), (6, 'B'), (6, 'C'), (6, 'D'), (6, 'E'), (6, 'F'), (6, 'G'), (6, 'H');
 insert into bimestre (nro) values(1),(2),(3),(4);
 insert into gestion (nro) values(2018);
-insert into bimestre_gestion (gestion_id, bimestre_id) values (1, 1);
+insert into bimestre_gestion (gestion_id, bimestre_id, active) values (1, 1, 1);

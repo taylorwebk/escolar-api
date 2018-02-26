@@ -1,0 +1,5 @@
+[database]
+host    = mysql.hostinger.es
+user    = u129283793_ecdb
+password= tallarin3
+database= u129283793_ecdb
