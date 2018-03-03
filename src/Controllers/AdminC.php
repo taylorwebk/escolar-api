@@ -104,6 +104,21 @@ class AdminC
                 $curso->save();
             }
         }
+        $cursos = $cursos->reduce(function($carry, $item) {
+            $par = [
+                'id'        => $item->id,
+                'paralelo'  => $item->paralelo,
+                'estado'    => $item->estado
+            ];
+            if (!Utils::inMultiarray($item->nro, $carry)) {
+                array_push($carry, [
+                    'curso' => $item->nro,
+                    'paralelos' => []
+                ]);
+            }
+            array_push($carry[count($carry) - 1]['paralelos'], $par);
+            return $carry;
+        }, []);
         return Response::OKWhitToken(
             'Cursos habilitados y deshabilitados correctamente',
             'Cambios guardados...',
