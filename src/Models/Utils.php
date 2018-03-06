@@ -14,7 +14,7 @@ class Utils
             'ci' => $ci
         ];
         $data = [
-            'exp' => time() + 60*100,
+            'exp' => time() + 15,
             'data' => $userdata
         ];
         $tokenstr = JWT::encode($data, PRIVATEKEY, 'HS512');
