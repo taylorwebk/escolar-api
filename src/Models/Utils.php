@@ -1,6 +1,8 @@
 <?php
 namespace Models;
-use \Firebase\JWT\JWT;
+use \Lcobucci\JWT\Builder;
+use \Lcobucci\JWT\ValidationData;
+use \Lcobucci\JWT\Parser;
 use \Models\Estudiante;
 use \Models\Gestion;
 class Utils
@@ -9,37 +11,36 @@ class Utils
      * Generates a token based in a id and ci of user.
      */
     public static function generateToken($id, $ci) {
-        $userdata = [
-            'id' => $id,
-            'ci' => $ci
-        ];
-        $data = [
-            'exp' => time() + 15,
-            'data' => $userdata
-        ];
-        $tokenstr = JWT::encode($data, PRIVATEKEY, 'HS512');
-        return $tokenstr;
+        $currentTime = time();
+        $tokenstr = (new Builder())
+            ->setIssuer(IP)
+            ->setIssuedAt($currentTime)
+            ->setExpiration($currentTime + 90 * 60)
+            ->set('id', $id)
+            ->set('ci', $ci)
+            ->getToken();                    
+        return (string) $tokenstr;
     }
     public static function generateStudentToken($id, $username) {
-        $userdata = [
-            'id'    => $id,
-            'username'  => $username
-        ];
-        $data = [
-            'data' => $userdata
-        ];
-        $tokenstr = JWT::encode($data, PRIVATEKEY, 'HS512');
-        return $tokenstr;
+        $tokenstr = (new Builder())
+            ->setIssuer(IP)
+            ->setIssuedAt(time())
+            ->set('id', $id)
+            ->set('username', $username)
+            ->getToken();
+        return (string) $tokenstr;
     }
     public static function decodeToken($tokenstr) {
-        try {
-            $data = JWT::decode($tokenstr, PRIVATEKEY, ['HS512'])->data;
-        } catch(\Firebase\JWT\ExpiredException $e) {
-            return 'token';
-        } catch(\Exception $e) {
-            return $e->getMessage();
+        $token = (new Parser())->parse((string)$tokenstr);
+        $data = new ValidationData();
+        $data->setIssuer(IP);
+        if (!$token->isExpired()) {
+            return [
+                'id' => $token->getClaim('id'),
+                'ci' => $token->getClaim('ci')
+            ];
         }
-        return $data;
+        return false;            
     }
     public static function validateData($data, $fields)
     {

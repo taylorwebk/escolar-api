@@ -22,14 +22,15 @@ class AdminAuth
       return $res->withJson($respuesta);
     }
     $data = Utils::decodeToken($tokenarr[0]);
-    if (gettype($data) == 'string') {
-      $response = $data == 'token' ?
-      Res::Unauthorized('Token expirado.', 'Ha estado inactivo por un largo tiempo, por favor ingrese de nuevo'):
-      Res::InternarServerError($data);
+    if ($data == false) {
+      $response = Res::Unauthorized(
+        'Token expirado.',
+        'Ha estado inactivo por un largo tiempo, por favor ingrese de nuevo'
+      );
       return $res->withJson($response);
     }
     //var_dump($next['logger']);
-    $admin = Admin::Where('ci', $data->ci)->firstOrFail();
+    $admin = Admin::Where('ci', $data['ci'])->firstOrFail();
     $req = $req->withAttribute('admin', $admin);
     $res = $next($req, $res);
     // HERE GOES THE ACTIONS AFTER THE REQUEST

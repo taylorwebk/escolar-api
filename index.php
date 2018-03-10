@@ -22,14 +22,16 @@ $config['db']['collation'] = 'utf8_general_ci';
 $app = new \Slim\App(['settings' => $config]);
 
 $container = $app->getContainer();
-/*$c['errorHandler'] = function ($c) {
+$container['errorHandler'] = function ($c) {
   return function ($request, $response, $exception) use ($c) {
     $data;
-    $data['status'] = "error";
-    $data['content'] = "Fatal Error.... Unknow Error";
+    $data['code'] = 500;
+    $data['devmsg'] = $exception->getMessage();
+    $data['usrmsg'] = "error";
+    $data['content'] = null;
     return $c['response']->withJson($data);
   };
-};*/
+};
 $container['logger'] = function($c) {
     $logger = new \Monolog\Logger('my_logger');
     $file_handler = new \Monolog\Handler\StreamHandler('./logs/app.log');
