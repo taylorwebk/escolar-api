@@ -8,6 +8,7 @@ use \Models\Response;
 use \Models\Estudiante;
 use \Models\Apoderado;
 use \Models\Inscribe;
+use \Models\Materia;
 
 class AdminC
 {
@@ -46,11 +47,17 @@ class AdminC
             } else {
                 $saludo = $hora <= 18 ? 'Buenas tardes ' : 'Buenas Noches';
             }
+            $arrayResponse = [
+                'gestion' => Utils::getCurrentYear()->nro,
+                'bimestre' => Utils::getCurrentBimester(),
+                'materias' => Materia::select('id', 'nombre')->get(),
+                'admin' => $admin
+            ];
             return Response::OKWhitToken(
                 'Login correcto',
                 $saludo.$admin->nombres,
                 $tokenstr,
-                $admin
+                $arrayResponse
             );
         } else {
             return Response::Unauthorized(

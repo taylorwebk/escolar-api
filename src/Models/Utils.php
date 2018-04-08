@@ -62,8 +62,20 @@ class Utils
         $username = $username . $nro;
         return $username;
     }
-    public static function getCurrentYear()
-    {
+    public static function getCurrentBimester() {
+        $years = Gestion::all();
+        $bim = null;
+        $years->each(function($year) use(&$bim) {
+            $year->bimestres->each(function ($bimestre) use(&$bim, $year) {
+                if($bimestre->pivot->active == 1) {
+                    $bim = $bimestre->nro;
+                    return false;
+                }
+            });
+        });
+        return $bim;
+    }
+    public static function getCurrentYear() {
         $years = Gestion::all();
         $ryear = null;
         $years->each(function($year) use(&$ryear) {
