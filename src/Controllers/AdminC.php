@@ -9,6 +9,7 @@ use \Models\Estudiante;
 use \Models\Apoderado;
 use \Models\Inscribe;
 use \Models\Materia;
+use \Models\Profesor;
 
 class AdminC
 {
@@ -172,6 +173,30 @@ class AdminC
             'Estudiante: ' . $student->nombres . ' inscrito correctamente en el curso: ' . $curso->nro . '° de Secundaria, paralelo: ' . $curso->paralelo,
             Utils::generateToken($admin->id, $admin->ci),
             $student->username
+        );
+    }
+    public static function RegisterTeacher($admin, $data) {
+        $fields = ['nombres', 'appat', 'apmat', 'ci', 'dir', 'materias'];
+        if (!Utils::validateData($data, $fields)) {
+            return Response::BadRequest(Utils::implodeFields($fields));
+        }
+        $prof = Profesor::create([
+            'nombres'   => $data['nombres'],
+            'appat'     => $data['appat'],
+            'apmat'     => $data['apmat'],
+            'ci'        => $data['ci'],
+            'dir'       => $data['dir']
+        ]);
+        $mats = array_reduce($data['materias'], function($res, $mat) {
+            $res[$mat] = ['estado' => 1];
+            return $res;
+        }, []);
+        $prof->materias()->attach($mats);
+        return Response::OKWhitToken(
+            'Registro exitoso',
+            'Docente: ' . $prof->nombres . ' registrado en el sistema.',
+            Utils::generateToken($admin->id, $admin->ci),
+            null
         );
     }
 }

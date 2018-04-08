@@ -21,6 +21,11 @@ $app->group('/admin', function () use ($app) {
         $result = AdminC::RegisterStudent($admin, $req->getParsedBody());
         return $res->withJson($result);
     });
+    $app->post('/profesor', function (Request $req, Response $res) {
+        $admin = $req->getAttribute('admin');
+        $result = AdminC::RegisterTeacher($admin, $req->getParsedBody());
+        return $res->withJson($result);
+    });
 
 })->add(new \Middlewares\AdminAuth($container['logger']));
 

@@ -9,8 +9,5 @@ class Gestion extends Model
     public function bimestres() {
       return $this->belongsToMany('\Models\Bimestre')->withPivot('active');
     }
-    public function current() {
-      return $this->belongsToMany('\Models\Bimestre')->wherePivot('active', 1);
-    }
 }
 
