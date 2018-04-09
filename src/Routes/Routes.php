@@ -26,6 +26,12 @@ $app->group('/admin', function () use ($app) {
         $result = AdminC::RegisterTeacher($admin, $req->getParsedBody());
         return $res->withJson($result);
     });
+    $app->get('/horario/curso/{id:[0-9]+}', function (Request $req, Response $res, $args)
+    {
+        $admin = $req->getAttribute('admin');
+        $result = AdminC::getCourseSchedule($admin, $args['id']);
+        return $res->withJson($result);
+    });
 
 })->add(new \Middlewares\AdminAuth($container['logger']));
 

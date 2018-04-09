@@ -6,7 +6,7 @@ define("PROJECTPATH", __DIR__);
 define("IP", $_SERVER['SERVER_NAME']);
 define("PRIVATEKEY", "ISEEDEADPEOPLE");
 
-$dbconfig = parse_ini_file(PROJECTPATH . '/src/Database/configs.db');
+$dbconfig = parse_ini_file(PROJECTPATH . '/src/Database/config.db');
 
 $config['displayErrorDetails'] = true;
 $config['addContentLengthHeader'] = false;
@@ -22,7 +22,7 @@ $config['db']['collation'] = 'utf8_general_ci';
 $app = new \Slim\App(['settings' => $config]);
 
 $container = $app->getContainer();
-$container['errorHandler'] = function ($c) {
+/* $container['errorHandler'] = function ($c) {
   return function ($request, $response, $exception) use ($c) {
     $data;
     $data['code'] = 500;
@@ -31,7 +31,7 @@ $container['errorHandler'] = function ($c) {
     $data['content'] = null;
     return $c['response']->withJson($data);
   };
-};
+}; */
 $container['logger'] = function($c) {
     $logger = new \Monolog\Logger('my_logger');
     $file_handler = new \Monolog\Handler\StreamHandler('./logs/app.log');

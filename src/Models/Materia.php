@@ -9,5 +9,8 @@ class Materia extends Model
     public function profesores() {
         return $this->belongsToMany('\Models\Profesor')->withPivot('estado');
     }
+    public function cursas() {
+        return $this->hasMany('\Models\Cursa');
+    }
 }
 

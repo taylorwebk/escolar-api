@@ -3,6 +3,7 @@ namespace Controllers;
 
 use \Models\Admin;
 use \Models\Curso;
+use \Models\Cursa;
 use \Models\Utils;
 use \Models\Response;
 use \Models\Estudiante;
@@ -10,6 +11,7 @@ use \Models\Apoderado;
 use \Models\Inscribe;
 use \Models\Materia;
 use \Models\Profesor;
+use \Models\Periodo;
 
 class AdminC
 {
@@ -76,7 +78,7 @@ class AdminC
                 'paralelo'  => $item->paralelo,
                 'estado'    => $item->estado
             ];
-            if (!Utils::inMultiarray($item->nro, $carry)) {
+            if (!Utils::inMultiarray($item->nro, $carry, 'curso')) {
                 array_push($carry, [
                     'curso' => $item->nro,
                     'paralelos' => []
@@ -198,5 +200,46 @@ class AdminC
             Utils::generateToken($admin->id, $admin->ci),
             null
         );
+    }
+    public static function getCourseSchedule($admin, $id)
+    {
+        $pers = Periodo::with('dia')->get();
+        $curse = Curso::select('id')->where('id', $id)->with('cursas.materia.profesores')->first();
+        if (!$curse) {
+            return Response::BadRequest('No existe el curso con ID:'.$id);
+        }
+        $response = [];
+        $response['id_curso'] = $curse->id;
+        $response['materias'] = $curse->cursas->map(function ($item) {
+            $profs = $item->materia->profesores->map(function($prof) {
+                return [
+                    'id'    => $prof->id,
+                    'nombre'=> $prof->nombres . ' ' . $prof->appat
+                ];
+            });
+            return [
+                'id'            => $item->id,
+                'materia'       => $item->materia->nombre,
+                'profesores'    => $profs
+            ];
+        });
+        $response['horario'] = $pers->reduce(function ($res, $per) {
+            $daykey = $per->dia->literal;
+            $periodo = [
+                'id'            => $per->id,
+                'nro'           => $per->nro,
+                'id_materia'    => null,
+                'literal'       => null
+            ];
+            if(!Utils::inMultiarray($daykey, $res, 'dia')) {
+                array_push($res, [
+                    'dia'       => $daykey,
+                    'periodos'  => []
+                ]);
+            }
+            array_push($res[count($res) - 1]['periodos'], $periodo);
+            return $res;
+        }, []);
+        return $response;
     }
 }
