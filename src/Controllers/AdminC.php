@@ -12,6 +12,7 @@ use \Models\Inscribe;
 use \Models\Materia;
 use \Models\Profesor;
 use \Models\Periodo;
+use \Models\Horario;
 
 class AdminC
 {
@@ -204,7 +205,7 @@ class AdminC
     public static function getCourseSchedule($admin, $id)
     {
         $pers = Periodo::with('dia')->get();
-        $curse = Curso::select('id')->where('id', $id)->with('cursas.materia.profesores')->first();
+        $curse = Curso::select('id')->where('id', $id)->with(['cursas.materia.profesores'])->first();
         if (!$curse) {
             return Response::BadRequest('No existe el curso con ID:'.$id);
         }
@@ -218,18 +219,28 @@ class AdminC
                 ];
             });
             return [
-                'id'            => $item->id,
+                'id'            => $item->materia->id,
                 'materia'       => $item->materia->nombre,
-                'profesores'    => $profs
+                'profesores'    => $profs,
+                'profesor'      => @ $item->instruyes->firstWhere('gestion_id', Utils::getCurrentYear()->id)->profesor->id
             ];
         });
-        $response['horario'] = $pers->reduce(function ($res, $per) {
+        $mats = Cursa::where('curso_id', $id)->get();
+        $idscursa = $mats->map(function($mat) {
+            return $mat->id;
+        });
+        $horarios = Horario::whereIn('cursa_id', $idscursa)->get();
+        $response['horario'] = $pers->reduce(function ($res, $per) use ($horarios) {
+            $materia = null;
+            if ($horarios->contains('periodo_id', $per->id)) {
+                $materia = $horarios->where('periodo_id', $per->id)->first()->cursa->materia;
+            }
             $daykey = $per->dia->literal;
             $periodo = [
                 'id'            => $per->id,
                 'nro'           => $per->nro,
-                'id_materia'    => null,
-                'literal'       => null
+                'id_materia'    => $materia?$materia->id:null,
+                'literal'       => $materia?$materia->nombre:null
             ];
             if(!Utils::inMultiarray($daykey, $res, 'dia')) {
                 array_push($res, [
@@ -240,6 +251,11 @@ class AdminC
             array_push($res[count($res) - 1]['periodos'], $periodo);
             return $res;
         }, []);
-        return $response;
+        return Response::OKWhitToken(
+            'todo ok',
+            'Horario obtenido satisfactoriamente',
+            Utils::generateToken($admin->id, $admin->ci),
+            $response
+        );
     }
 }

@@ -13,4 +13,7 @@ class Cursa extends Model
   public function materia() {
     return $this->belongsTo('\Models\Materia');
   }
+  public function instruyes() {
+    return $this->hasMany('\Models\Instruye');
+  }
 }
