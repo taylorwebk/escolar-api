@@ -3,6 +3,7 @@ namespace Models;
 use Illuminate\Database\Eloquent\Model;
 class Instruye extends Model
 {
+  protected $guarded = [];
   protected $table = 'instruye';
   public $timestamps = false;
 

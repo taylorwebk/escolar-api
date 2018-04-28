@@ -9,6 +9,7 @@ use \Models\Response;
 use \Models\Estudiante;
 use \Models\Apoderado;
 use \Models\Inscribe;
+use \Models\Instruye;
 use \Models\Materia;
 use \Models\Profesor;
 use \Models\Periodo;
@@ -121,7 +122,7 @@ class AdminC
                 'paralelo'  => $item->paralelo,
                 'estado'    => $item->estado
             ];
-            if (!Utils::inMultiarray($item->nro, $carry)) {
+            if (!Utils::inMultiarray($item->nro, $carry, 'curso')) {
                 array_push($carry, [
                     'curso' => $item->nro,
                     'paralelos' => []
@@ -256,6 +257,42 @@ class AdminC
             'Horario obtenido satisfactoriamente',
             Utils::generateToken($admin->id, $admin->ci),
             $response
+        );
+    }
+    public static function setCourserSchedule($admin, $data, $id)
+    {
+        $fields = ['materias', 'periodos'];
+        if (!Utils::validateData($data, $fields)) {
+            return Response::BadRequest(Utils::implodeFields($fields));
+        }
+        $yearId = Utils::getCurrentYear()->id;
+        foreach ($data['materias'] as $idmat => $idprof) {
+            $cursa = Cursa::where([
+                ['materia_id', '=', $idmat],
+                ['curso_id', '=', $id]
+            ])->first();
+            $instruye = Instruye::create([
+                'cursa_id'      => $cursa->id,
+                'profesor_id'   => $idprof,
+                'gestion_id'    => $yearId
+            ]);
+        }
+        foreach ($data['periodos'] as $idper => $idmat) {
+            $cursa = Cursa::where([
+                ['materia_id', '=', $idmat],
+                ['curso_id', '=', $id]
+            ])->first();
+            $horario = Horario::create([
+                'cursa_id'      => $cursa->id,
+                'periodo_id'    => $idper,
+                'gestion_id'    => $yearId
+            ]);
+        }
+        return Response::OKWhitToken(
+            'todo ok',
+            'Horario guardado.',
+            Utils::generateToken($admin->id, $admin->ci),
+            null
         );
     }
 }
