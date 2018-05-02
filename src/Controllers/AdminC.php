@@ -220,8 +220,8 @@ class AdminC
                 ];
             });
             return [
-                'id'            => $item->materia->id,
-                'materia'       => $item->materia->nombre,
+                'id_materia'    => $item->materia->id,
+                'literal'       => $item->materia->nombre,
                 'profesores'    => $profs,
                 'profesor'      => @ $item->instruyes->firstWhere('gestion_id', Utils::getCurrentYear()->id)->profesor->id
             ];
@@ -234,7 +234,7 @@ class AdminC
         $response['horario'] = $pers->reduce(function ($res, $per) use ($horarios) {
             $materia = null;
             if ($horarios->contains('periodo_id', $per->id)) {
-                $materia = $horarios->where('periodo_id', $per->id)->first()->cursa->materia;
+                $materia = $horarios->where('periodo_id', $per->id)->last()->cursa->materia;
             }
             $daykey = $per->dia->literal;
             $periodo = [
