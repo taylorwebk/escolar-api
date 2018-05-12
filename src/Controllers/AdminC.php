@@ -207,13 +207,14 @@ class AdminC
     {
         $pers = Periodo::with('dia')->get();
         $curse = Curso::select('id')->where('id', $id)->with(['cursas.materia.profesores'])->first();
+        $currYearId = Utils::getCurrentYear()->id;
         if (!$curse) {
             return Response::BadRequest('No existe el curso con ID:'.$id);
         }
         $response = [];
         $response['id_curso'] = $curse->id;
-        $response['materias'] = $curse->cursas->map(function ($item) {
-            $profs = $item->materia->profesores->map(function($prof) {
+        $response['materias'] = $curse->cursas->map(function ($item) use ($currYearId) {
+            $profs = $item->materia->profesores->map(function($prof) use ($currYearId) {
                 return [
                     'id'    => $prof->id,
                     'nombre'=> $prof->nombres . ' ' . $prof->appat
@@ -223,7 +224,7 @@ class AdminC
                 'id_materia'    => $item->materia->id,
                 'literal'       => $item->materia->nombre,
                 'profesores'    => $profs,
-                'profesor'      => @ $item->instruyes->firstWhere('gestion_id', Utils::getCurrentYear()->id)->profesor->id
+                'profesor'      => @ $item->instruyes->where('gestion_id', $currYearId)->last()->profesor->id
             ];
         });
         $mats = Cursa::where('curso_id', $id)->get();
@@ -271,28 +272,111 @@ class AdminC
                 ['materia_id', '=', $idmat],
                 ['curso_id', '=', $id]
             ])->first();
-            $instruye = Instruye::create([
-                'cursa_id'      => $cursa->id,
-                'profesor_id'   => $idprof,
-                'gestion_id'    => $yearId
-            ]);
+            $instruye = Instruye::where([
+                ['cursa_id', '=', $cursa->id],
+                ['gestion_id', '=', $yearId]
+            ])->first();
+            if ($instruye) {
+                $instruye->profesor_id = $idprof;
+                $instruye->save();
+            } else {
+                Instruye::create([
+                    'cursa_id'      => $cursa->id,
+                    'profesor_id'   => $idprof,
+                    'gestion_id'    => $yearId
+                ]);
+            }
         }
         foreach ($data['periodos'] as $idper => $idmat) {
             $cursa = Cursa::where([
                 ['materia_id', '=', $idmat],
                 ['curso_id', '=', $id]
             ])->first();
-            $horario = Horario::create([
-                'cursa_id'      => $cursa->id,
-                'periodo_id'    => $idper,
-                'gestion_id'    => $yearId
-            ]);
+            $horario = Horario::where([
+                ['periodo_id', '=', $idper],
+                ['gestion_id', '=', $yearId]
+            ])->first();
+            if ($horario) {
+                $horario->cursa_id = $cursa->id;
+                $horario->save();
+            } else {
+                Horario::create([
+                    'cursa_id'      => $cursa->id,
+                    'periodo_id'    => $idper,
+                    'gestion_id'    => $yearId
+                ]);
+            } 
         }
         return Response::OKWhitToken(
             'todo ok',
             'Horario guardado.',
             Utils::generateToken($admin->id, $admin->ci),
             null
+        );
+    }
+    public static function getTeachers($admin) {
+        $teachers = Profesor::with('materias')->get();
+        $teachersres = $teachers->map(function($teacher) {
+            $teach = [];
+            $teach['id'] = $teacher->id;
+            $teach['nombres'] = $teacher->nombres;
+            $teach['appat'] = $teacher->appat;
+            $teach['apmat'] = $teacher->apmat;
+            $teach['ci'] = $teacher->ci;
+            $teach['dir'] = $teacher->dir;
+            $teach['materias'] = $teacher->materias->map(function($materia) {
+                return [
+                    'id'        => $materia->id,
+                    'nombre'    => $materia->nombre,
+                    'estado'    => $materia->pivot->estado
+                ];
+            });
+            return $teach;
+        });
+        return Response::OKWhitToken(
+            'todo ok',
+            'Lista de docentes cargado',
+            Utils::generateToken($admin->id, $admin->ci),
+            $teachersres
+        );
+    }
+    public static function updateTeacher($admin, $data, $id) {
+        $fields = ['nombres', 'appat', 'apmat', 'ci', 'dir', 'materias'];
+        if (!Utils::validateData($data, $fields)) {
+            return Response::BadRequest(Utils::implodeFields($fields));
+        }
+        $teacher = Profesor::find($id);
+        if (!$teacher) {
+            return Response::BadRequest('No existe el profesor con ID: ' . $id);
+        }
+        $teacher->nombres = $data['nombres'];
+        $teacher->appat = $data['appat'];
+        $teacher->apmat = $data['apmat'];
+        $teacher->ci = $data['ci'];
+        $teacher->dir = $data['dir'];
+        $teacher->save();
+        $mats = array_reduce($data['materias'], function($res, $mat) {
+            $res[$mat] = ['estado' => 1];
+            return $res;
+        }, []);
+        $teacher->materias()->sync($mats);
+        return Response::OKWhitToken(
+            'Actualización correcta',
+            'Docente: ' . $teacher->nombres . ' actualizado correctamente.',
+            Utils::generateToken($admin->id, $admin->ci),
+            null
+        );
+    }
+    public static function getStudents($admin) {
+        $yearId = Utils::getCurrentYear()->id;
+        $students = Estudiante::select('id', 'nombres', 'appat', 'apmat', 'ci')
+                    ->whereIn('id', Inscribe::select('estudiante_id')->where('gestion_id', $yearId)->get())
+                    ->get();
+        return Response::OKWhitToken(
+            'Todo OK',
+            'Lista de estudiantes obtenida correctamente.',
+            Utils::generateToken($admin->id, $admin->ci),
+            $students
         );
     }
 }
