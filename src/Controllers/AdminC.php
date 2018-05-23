@@ -287,25 +287,17 @@ class AdminC
                 ]);
             }
         }
+        Horario::whereIn('cursa_id', Cursa::select('id')->where('curso_id', $id)->get())->where('gestion_id', $yearId)->delete();
         foreach ($data['periodos'] as $idper => $idmat) {
             $cursa = Cursa::where([
                 ['materia_id', '=', $idmat],
                 ['curso_id', '=', $id]
             ])->first();
-            $horario = Horario::where([
-                ['periodo_id', '=', $idper],
-                ['gestion_id', '=', $yearId]
-            ])->first();
-            if ($horario) {
-                $horario->cursa_id = $cursa->id;
-                $horario->save();
-            } else {
-                Horario::create([
-                    'cursa_id'      => $cursa->id,
-                    'periodo_id'    => $idper,
-                    'gestion_id'    => $yearId
-                ]);
-            } 
+            Horario::create([
+                'cursa_id'      => $cursa->id,
+                'periodo_id'    => $idper,
+                'gestion_id'    => $yearId
+            ]);
         }
         return Response::OKWhitToken(
             'todo ok',
@@ -377,6 +369,58 @@ class AdminC
             'Lista de estudiantes obtenida correctamente.',
             Utils::generateToken($admin->id, $admin->ci),
             $students
+        );
+    }
+    public static function getStudent($admin, $id) {
+        $yearId = Utils::getCurrentYear()->id;
+        $student = Estudiante::where('id', $id)->with([
+            'apoderado',
+            'mainInscribe'
+        ])->first();
+        $insc = $student->mainInscribe->first();
+        $response = [
+            'id'        => $student->id,
+            'ci'        => $student->ci,
+            'nombres'   => $student->nombres,
+            'appat'     => $student->appat,
+            'apmat'     => $student->apmat,
+            'username'  => $student->username,
+            'dir'       => $student->dir,
+            'nrocel'    => $student->nrocel,
+            'apoderado' => $student->apoderado,
+            'fecha'  => $insc->fecha,
+            'curso'     => $insc->curso
+        ];
+        return Response::OKWhitToken(
+            'Todo OK',
+            'Datos del estudiante obtenidos correctamente.',
+            Utils::generateToken($admin->id, $admin->ci),
+            $response
+        );
+    }
+    public static function updateStudent($admin, $data, $id) {
+        $fields = ['nombres', 'appat', 'apmat', 'ci', 'dir', 'nrocel', 'aponombre', 'aponro', 'apopar'];
+        if (!Utils::validateData($data, $fields)) {
+            return Response::BadRequest(Utils::implodeFields($fields));
+        }
+        $student = Estudiante::find($id);
+        $apo = Apoderado::where('id', $student->apoderado_id)->first();
+        $student->nombres = $data['nombres'];
+        $student->appat = $data['appat'];
+        $student->apmat = $data['apmat'];
+        $student->ci = $data['ci'];
+        $student->dir = $data['dir'];
+        $student->nrocel = $data['nrocel'];
+        $student->save();
+        $apo->nombre = $data['aponombre'];
+        $apo->nroref = $data['aponro'];
+        $apo->parentesco = $data['apopar'];
+        $apo->save();
+        return Response::OKWhitToken(
+            'Todo OK',
+            'Datos del estudiante actualizados.',
+            Utils::generateToken($admin->id, $admin->ci),
+            null
         );
     }
 }

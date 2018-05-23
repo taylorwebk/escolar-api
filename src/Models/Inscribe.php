@@ -6,8 +6,8 @@ class Inscribe extends Model
     protected $guarded = [];
     protected $table = 'inscribe';
     public $timestamps = false;
-/*     public function apoderado() {
-      return $this->belongsTo('\Models\Apoderado');
-    } */
+    public function curso() {
+        return $this->belongsTo('\Models\Curso');
+    }
 }
 

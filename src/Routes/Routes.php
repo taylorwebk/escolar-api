@@ -52,7 +52,16 @@ $app->group('/admin', function () use ($app) {
         $result = AdminC::getStudents($admin);
         return $res->withJson($result);
     });
-
+    $app->get('/estudiante/{id:[0-9]+}', function(Request $req, Response $res, $args) {
+        $admin = $req->getAttribute('admin');
+        $result = AdminC::getStudent($admin, $args['id']);
+        return $res->withJson($result);
+    });
+    $app->put('/estudiante/{id:[0-9]+}', function(Request $req, Response $res, $args) {
+        $admin = $req->getAttribute('admin');
+        $result = AdminC::updateStudent($admin, $req->getParsedBody(), $args['id']);
+        return $res->withJson($result);
+    });
 })->add(new \Middlewares\AdminAuth($container['logger']));
 
 $app->get('/bugsbunny', function (Request $req, Response $res)
