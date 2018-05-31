@@ -96,6 +96,7 @@ create table profesor(
   apmat varchar(127),
   appat varchar(127),
   ci varchar(63),
+  password varchar(257),
   dir varchar(127),
   primary key(id)
 );

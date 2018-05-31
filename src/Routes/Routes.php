@@ -3,6 +3,7 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use \Controllers\AdminC;
 use \Controllers\StudentC;
+use \Controllers\TeacherC;
 
 $app->group('/admin', function () use ($app) {
     $app->get('/cursos', function (Request $req, Response $res) {
@@ -75,5 +76,9 @@ $app->post('/admin/login', function (Request $req, Response $res){
 });
 $app->post('/student/login', function (Request $req, Response $res) {
     $result = StudentC::Login($req->getParsedBody());
+    return $res->withJson($result);
+});
+$app->post('/prof/login', function (Request $req, Response $res) {
+    $result = TeacherC::Login($req->getParsedBody());
     return $res->withJson($result);
 });

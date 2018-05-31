@@ -52,10 +52,14 @@ class AdminC
             } else {
                 $saludo = $hora <= 18 ? 'Buenas tardes ' : 'Buenas Noches';
             }
+            $nroEst = Estudiante::count();
+            $nroProf = Profesor::count();
             $arrayResponse = [
                 'gestion' => Utils::getCurrentYear()->nro,
                 'bimestre' => Utils::getCurrentBimester(),
                 'materias' => Materia::select('id', 'nombre')->get(),
+                'nro_est' => $nroEst,
+                'nro_prof' => $nroProf,
                 'admin' => $admin
             ];
             return Response::OKWhitToken(
@@ -189,7 +193,8 @@ class AdminC
             'appat'     => $data['appat'],
             'apmat'     => $data['apmat'],
             'ci'        => $data['ci'],
-            'dir'       => $data['dir']
+            'dir'       => $data['dir'],
+            'password'  => password_hash($data['ci'], PASSWORD_DEFAULT)
         ]);
         $mats = array_reduce($data['materias'], function($res, $mat) {
             $res[$mat] = ['estado' => 1];
@@ -333,7 +338,7 @@ class AdminC
         );
     }
     public static function updateTeacher($admin, $data, $id) {
-        $fields = ['nombres', 'appat', 'apmat', 'ci', 'dir', 'materias'];
+        $fields = ['nombres', 'appat', 'apmat', 'ci', 'dir', 'materias', 'password'];
         if (!Utils::validateData($data, $fields)) {
             return Response::BadRequest(Utils::implodeFields($fields));
         }
@@ -341,11 +346,13 @@ class AdminC
         if (!$teacher) {
             return Response::BadRequest('No existe el profesor con ID: ' . $id);
         }
+        $newpass = $data['password'] == ''? $teacher->password: password_hash($data['password'], PASSWORD_DEFAULT);
         $teacher->nombres = $data['nombres'];
         $teacher->appat = $data['appat'];
         $teacher->apmat = $data['apmat'];
         $teacher->ci = $data['ci'];
         $teacher->dir = $data['dir'];
+        $teacher->password = $newpass;
         $teacher->save();
         $mats = array_reduce($data['materias'], function($res, $mat) {
             $res[$mat] = ['estado' => 1];

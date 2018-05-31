@@ -5,6 +5,7 @@ class Profesor extends Model
 {
     protected $guarded = [];
     protected $table = 'profesor';
+    protected $hidden = ['password'];
     public $timestamps = false;
     public function materias() {
       return $this->belongsToMany('\Models\Materia')->withPivot('estado');
