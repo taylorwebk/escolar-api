@@ -16,4 +16,7 @@ class Instruye extends Model
   public function profesor() {
     return $this->belongsTo('\Models\Profesor');
   }
+  public function trabajos() {
+    return $this->hasMany('\Models\Trabajo');
+  }
 }

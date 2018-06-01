@@ -64,7 +64,18 @@ $app->group('/admin', function () use ($app) {
         return $res->withJson($result);
     });
 })->add(new \Middlewares\AdminAuth($container['logger']));
-
+$app->group('/prof', function() use ($app) {
+    $app->post('/trabajo', function(Request $req, Response $res) {
+        $prof = $req->getAttribute('prof');
+        $result = TeacherC::addHomeWork($prof, $req->getParsedBody());
+        return $res->withJson($result);
+    });
+    $app->get('/curso/{id:[0-9]+}', function(Request $req, Response $res, $args) {
+        $prof = $req->getAttribute('prof');
+        $result = TeacherC::getCourseInfo($prof, $args['id']);
+        return $res->withJson($result);
+    });
+})->add(new \Middlewares\TeacherAuth());
 $app->get('/bugsbunny', function (Request $req, Response $res)
 {
     AdminC::Add('Bugs', 'Bunny', 'Bunny', 77777777, 1234567, 'bugsbunny');

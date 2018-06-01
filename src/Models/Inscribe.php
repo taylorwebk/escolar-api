@@ -9,5 +9,8 @@ class Inscribe extends Model
     public function curso() {
         return $this->belongsTo('\Models\Curso');
     }
+    public function estudiante() {
+        return $this->belongsTo('\Models\Estudiante');
+    }
 }
 

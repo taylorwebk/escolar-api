@@ -68,7 +68,7 @@ class Utils
         $years->each(function($year) use(&$bim) {
             $year->bimestres->each(function ($bimestre) use(&$bim, $year) {
                 if($bimestre->pivot->active == 1) {
-                    $bim = $bimestre->nro;
+                    $bim = $bimestre;
                     return false;
                 }
             });

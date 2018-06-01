@@ -56,7 +56,7 @@ class AdminC
             $nroProf = Profesor::count();
             $arrayResponse = [
                 'gestion' => Utils::getCurrentYear()->nro,
-                'bimestre' => Utils::getCurrentBimester(),
+                'bimestre' => Utils::getCurrentBimester()->id,
                 'materias' => Materia::select('id', 'nombre')->get(),
                 'nro_est' => $nroEst,
                 'nro_prof' => $nroProf,

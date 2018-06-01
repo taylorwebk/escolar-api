@@ -16,5 +16,8 @@ class Estudiante extends Model
     public function mainInscribe() {
       return $this->hasMany('\Models\Inscribe')->where('gestion_id', 1)->with('curso');
     }
+    public function trabajos() {
+      return $this->belongsToMany('\Models\Trabajo')->withPivot('nota');
+    }
 }
 

@@ -9,4 +9,7 @@ class Curso extends Model
   public function cursas() {
     return $this->hasMany('\Models\Cursa');
   }
+  public function inscribes() {
+    return $this->hasMany('\Models\Inscribe');
+  }
 }
