@@ -42,6 +42,13 @@ class Utils
         }
         return false;            
     }
+    public static function decodeStudentToken($tokenstr) {
+        $token = (new Parser())->parse((string)$tokenstr);
+        return [
+            'id'        => $token->getClaim('id'),
+            'username'  => $token->getClaim('username')
+        ];
+    }
     public static function validateData($data, $fields)
     {
         foreach ($fields as $value) {

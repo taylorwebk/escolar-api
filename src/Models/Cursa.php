@@ -16,4 +16,7 @@ class Cursa extends Model
   public function instruyes() {
     return $this->hasMany('\Models\Instruye');
   }
+  public function horarios() {
+    return $this->hasMany('\Models\Horario');
+  }
 }

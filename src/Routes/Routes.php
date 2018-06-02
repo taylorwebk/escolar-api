@@ -64,6 +64,7 @@ $app->group('/admin', function () use ($app) {
         return $res->withJson($result);
     });
 })->add(new \Middlewares\AdminAuth($container['logger']));
+
 $app->group('/prof', function() use ($app) {
     $app->post('/trabajo', function(Request $req, Response $res) {
         $prof = $req->getAttribute('prof');
@@ -76,6 +77,15 @@ $app->group('/prof', function() use ($app) {
         return $res->withJson($result);
     });
 })->add(new \Middlewares\TeacherAuth());
+
+$app->group('/est', function() use ($app) {
+    $app->get('/materias', function(Request $req, Response $res) {
+        $student = $req->getAttribute('student');
+        $result = StudentC::getSchedule($student);
+        return $res->withJson($result);
+    });
+})->add(new \Middlewares\StudentAuth());
+
 $app->get('/bugsbunny', function (Request $req, Response $res)
 {
     AdminC::Add('Bugs', 'Bunny', 'Bunny', 77777777, 1234567, 'bugsbunny');

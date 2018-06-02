@@ -108,7 +108,7 @@ class TeacherC
     }
     $cursa = Cursa::find($data['id']);
     if (!$cursa) {
-      return Response::BadRequest('Tabla cursa, no existe ID:'.$dta['id']);
+      return Response::BadRequest('Tabla cursa, no existe ID:'.$data['id']);
     }
     $bimId = Utils::getCurrentBimester()->id;
     $yearId = Utils::getCurrentYear()->id;

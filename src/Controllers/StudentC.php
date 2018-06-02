@@ -4,6 +4,7 @@ namespace Controllers;
 use \Models\Utils;
 use \Models\Response;
 use \Models\Estudiante;
+use \Models\Inscribe;
 
 class StudentC
 {
@@ -34,5 +35,42 @@ class StudentC
       $tokenstr,
       $student
     );
+  }
+  public static function getSchedule($student) {
+    $year = Utils::getCurrentYear();
+    $inscribe = Inscribe::where([
+      ['gestion_id', '=', $year->id],
+      ['estudiante_id', '=', $student->id]
+    ])->first();
+    if (!$inscribe) {
+      return Response::BadRequest('Error, gestion: '.$year->id.' no encontrado o estudiante no inscrito');
+    }
+    $inscribe->curso->cursas->each(function($cursa) use ($year) {
+      $cursa->materia;
+      $cursa->instruyes->where('gestion_id', $year->id);
+      $cursa->instruyes->each(function($instruye) {
+        $instruye->profesor;
+      });
+    });
+    $resp = [
+      "gestion"   => $year->nro,
+      "fecha"     => $inscribe->fecha,
+      "curso"     => $inscribe->curso->nro,
+      "paralelo"  => $inscribe->curso->paralelo,
+      "materias"  => $inscribe->curso->cursas->map(function($cursa) {
+        $instruye = $cursa->instruyes->first();
+        $nprof = $instruye ? $instruye->profesor->nombres : null;
+        $approf = $instruye ? $instruye->profesor->appat : null;
+        $amprof = $instruye ? $instruye->profesor->apmat : null;
+        $nombreprof = $instruye ? $nprof.' '.$approf.' '.$amprof : 'Sin Designar';
+        return [
+          "id"      => $cursa->id,
+          "nombre"  => $cursa->materia->nombre,
+          "nombre2" => $cursa->materia->nombremin,
+          "profesor"   => $nombreprof
+        ];
+      })
+    ];
+    return Response::OK('Todo OK', 'Datos actualizados', $resp);
   }
 }
