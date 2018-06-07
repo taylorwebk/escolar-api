@@ -368,7 +368,7 @@ class AdminC
     }
     public static function getStudents($admin) {
         $yearId = Utils::getCurrentYear()->id;
-        $students = Estudiante::select('id', 'nombres', 'appat', 'apmat', 'ci')
+        $students = Estudiante::select('id', 'nombres', 'appat', 'apmat', 'ci', 'username')
                     ->whereIn('id', Inscribe::select('estudiante_id')->where('gestion_id', $yearId)->get())
                     ->get();
         return Response::OKWhitToken(
