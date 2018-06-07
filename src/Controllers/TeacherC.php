@@ -35,54 +35,59 @@ class TeacherC
       $instruye->cursa->materia;
     });
     $firstCourse = $prof->instruyes->first();
-    $firstCourse->trabajos->each(function($trabajo) {
-      $trabajo->bimestre;
-    });
-    $trabajosId = $firstCourse->trabajos->map(function($trabajo) {
-      return $trabajo->id;
-    });
-    $firstCourse->cursa->curso->inscribes->each(function($inscribe) use ($trabajosId) {
-      $inscribe->estudiante->trabajos->whereIn('id', $trabajosId);
-    });
-    $firstCourseParsed = [
-      'id'    => $firstCourse->cursa->id,
-      'nro'   => $firstCourse->cursa->curso->nro,
-      'par'   => $firstCourse->cursa->curso->paralelo,
-      'mat'   => $firstCourse->cursa->materia->nombre,
-      'campo' => $firstCourse->cursa->materia->campo,
-      'trabajos' => $firstCourse->trabajos->map(function($trabajo) {
-        return [
-          'id'      => $trabajo->id,
-          'nombre'  => $trabajo->nombre,
-          'fecha'   => $trabajo->fecha,
-          'bimestre'=> $trabajo->bimestre->nro 
-        ];
-      }),
-      'estudiantes' => $firstCourse->cursa->curso->inscribes->map(function($inscribe) {
-        return [
-          'id'      => $inscribe->estudiante->id,
-          'nombres' => $inscribe->estudiante->nombres,
-          'appat'   => $inscribe->estudiante->appat,
-          'apmat'   => $inscribe->estudiante->apmat,
-          'ci'      => $inscribe->estudiante->ci,
-          'trabajos'=> $inscribe->estudiante->trabajos->map(function($trabajo) {
-            return [
-              'id'  => $trabajo->id,
-              'nota'=> $trabajo->pivot->nota
-            ];
-          })
-        ];
-      })
-    ];
-    $cursos = $prof->instruyes->map(function($instruye) {
-      return [
-        'id'    => $instruye->cursa->id,
-        'nro'   => $instruye->cursa->curso->nro,
-        'par'   => $instruye->cursa->curso->paralelo,
-        'mat'   => $instruye->cursa->materia->nombre,
-        'campo' => $instruye->cursa->materia->campo
+    if ($firstCourse) {
+      $firstCourse->trabajos->each(function($trabajo) {
+        $trabajo->bimestre;
+      });
+      $trabajosId = $firstCourse->trabajos->map(function($trabajo) {
+        return $trabajo->id;
+      });
+      $firstCourse->cursa->curso->inscribes->each(function($inscribe) use ($trabajosId) {
+        $inscribe->estudiante->trabajos->whereIn('id', $trabajosId);
+      });
+      $firstCourseParsed = [
+        'id'    => $firstCourse->cursa->id,
+        'nro'   => $firstCourse->cursa->curso->nro,
+        'par'   => $firstCourse->cursa->curso->paralelo,
+        'mat'   => $firstCourse->cursa->materia->nombre,
+        'campo' => $firstCourse->cursa->materia->campo,
+        'trabajos' => $firstCourse->trabajos->map(function($trabajo) {
+          return [
+            'id'      => $trabajo->id,
+            'nombre'  => $trabajo->nombre,
+            'fecha'   => $trabajo->fecha,
+            'bimestre'=> $trabajo->bimestre->nro 
+          ];
+        }),
+        'estudiantes' => $firstCourse->cursa->curso->inscribes->map(function($inscribe) {
+          return [
+            'id'      => $inscribe->estudiante->id,
+            'nombres' => $inscribe->estudiante->nombres,
+            'appat'   => $inscribe->estudiante->appat,
+            'apmat'   => $inscribe->estudiante->apmat,
+            'ci'      => $inscribe->estudiante->ci,
+            'trabajos'=> $inscribe->estudiante->trabajos->map(function($trabajo) {
+              return [
+                'id'  => $trabajo->id,
+                'nota'=> $trabajo->pivot->nota
+              ];
+            })
+          ];
+        })
       ];
-    });
+      $cursos = $prof->instruyes->map(function($instruye) {
+        return [
+          'id'    => $instruye->cursa->id,
+          'nro'   => $instruye->cursa->curso->nro,
+          'par'   => $instruye->cursa->curso->paralelo,
+          'mat'   => $instruye->cursa->materia->nombre,
+          'campo' => $instruye->cursa->materia->campo
+        ];
+      });
+    } else {
+      $cursos = [];
+      $firstCourseParsed = [];
+    }
     $resp = [
       "profesor"=> [
         "id"      => $prof->id,
