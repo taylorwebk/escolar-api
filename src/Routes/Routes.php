@@ -84,6 +84,11 @@ $app->group('/est', function() use ($app) {
         $result = StudentC::getSchedule($student);
         return $res->withJson($result);
     });
+    $app->get('/materia/{id:[0-9]+}', function(Request $req, Response $res, $args) {
+        $student = $req->getAttribute('student');
+        $result = StudentC::getHomeworks($student, $args['id']);
+        return $res->withJson($result);
+    });
 })->add(new \Middlewares\StudentAuth());
 
 $app->get('/bugsbunny', function (Request $req, Response $res)

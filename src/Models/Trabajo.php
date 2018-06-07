@@ -12,5 +12,8 @@ class Trabajo extends Model
     public function bimestre() {
       return $this->belongsTo('\Models\Bimestre');
     }
+    public function estudiantes() {
+      return $this->belongsToMany('\Models\Estudiante')->withPivot('nota');
+    }
 }
 

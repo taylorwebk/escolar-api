@@ -84,12 +84,14 @@ class TeacherC
       ];
     });
     $resp = [
-      "id"      => $prof->id,
-      "nombres" => $prof->nombres,
-      "appat"   => $prof->appat,
-      "apmat"   => $prof->apmat,
-      "ci"      => $prof->ci,
-      "dir"     => $prof->dir,
+      "profesor"=> [
+        "id"      => $prof->id,
+        "nombres" => $prof->nombres,
+        "appat"   => $prof->appat,
+        "apmat"   => $prof->apmat,
+        "ci"      => $prof->ci,
+        "dir"     => $prof->dir
+      ],
       "cursos"  => $cursos,
       "curso_actual"  => $firstCourseParsed
     ];
