@@ -14,6 +14,7 @@ use \Models\Materia;
 use \Models\Profesor;
 use \Models\Periodo;
 use \Models\Horario;
+use \Models\Comunicado;
 
 class AdminC
 {
@@ -429,5 +430,32 @@ class AdminC
             Utils::generateToken($admin->id, $admin->ci),
             null
         );
+    }
+    public static function newNotice($admin, $data) {
+        $fields = ['titulo', 'cont'];
+        if (!Utils::validateData($data, $fields)) {
+            return Response::BadRequest(Utils::implodeFields($fields));
+        }
+        $comunicado = Comunicado::create([
+            'admin_id'  => $admin->id,
+            'fecha'     => date('Y-m-d'),
+            'hora'      => date('H:i:s'),
+            'titulo'    => $data['titulo'],
+            'cont'      => $data['cont'],
+            'remitente' => $admin->nombres
+        ]);
+        return Response::OKWhitToken(
+            'todo OK',
+            'Comunicado creado',
+            Utils::generateToken($admin->id, $admin->ci),
+            null
+        );
+    }
+    public static function getNotices() {
+        return Response::OK('OK', 'todo OK', Comunicado::orderBy('id', 'desc')->get());
+    }
+    public static function deleteNotice($admin, $id) {
+        Comunicado::find($id)->delete();
+        return Response::OKWhitToken('ok', 'todo ok', Utils::generateToken($admin->id, $admin->ci), null);
     }
 }

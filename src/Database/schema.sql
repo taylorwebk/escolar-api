@@ -209,6 +209,19 @@ create table admin(
   password varchar(127),
   primary key(id)
 );
+create table comunicado(
+  id integer not null auto_increment,
+  admin_id integer not null,
+  fecha date,
+  hora time,
+  titulo varchar(63),
+  cont text,
+  remitente varchar(63),
+  primary key(id),
+  foreign key(admin_id)
+  references admin(id)
+  on delete cascade
+);
 -- Insertamos las materias
 insert into materia (nombre, nombremin, campo) values
 ("REL", "Valores, Espiritualidad y Religiones", "Cosmos y Pensamiento"),

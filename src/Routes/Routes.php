@@ -63,6 +63,16 @@ $app->group('/admin', function () use ($app) {
         $result = AdminC::updateStudent($admin, $req->getParsedBody(), $args['id']);
         return $res->withJson($result);
     });
+    $app->post('/comunicado', function(Request $req, Response $res) {
+        $admin = $req->getAttribute('admin');
+        $result = AdminC::newNotice($admin, $req->getParsedBody());
+        return $res->withJson($result);
+    });
+    $app->delete('/comunicado/{id:[0-9]+}', function(Request $req, Response $res, $args) {
+        $admin = $req->getAttribute('admin');
+        $result = AdminC::deleteNotice($admin, $args['id']);
+        return $res->withJson($result);
+    });
 })->add(new \Middlewares\AdminAuth($container['logger']));
 
 $app->group('/prof', function() use ($app) {
@@ -106,5 +116,9 @@ $app->post('/student/login', function (Request $req, Response $res) {
 });
 $app->post('/prof/login', function (Request $req, Response $res) {
     $result = TeacherC::Login($req->getParsedBody());
+    return $res->withJson($result);
+});
+$app->get('/comunicados', function(Request $req, Response $res) {
+    $result = AdminC::getNotices();
     return $res->withJson($result);
 });

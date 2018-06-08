@@ -1,7 +1,7 @@
 <?php
 
 require './vendor/autoload.php';
-
+date_default_timezone_set('America/La_Paz');
 define("PROJECTPATH", __DIR__);
 define("IP", $_SERVER['SERVER_NAME']);
 define("PRIVATEKEY", "ISEEDEADPEOPLE");
