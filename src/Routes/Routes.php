@@ -86,6 +86,11 @@ $app->group('/prof', function() use ($app) {
         $result = TeacherC::getCourseInfo($prof, $args['id']);
         return $res->withJson($result);
     });
+    $app->post('/notas', function(Request $req, Response $res) {
+        $prof = $req->getAttribute('prof');
+        $result = TeacherC::setGrades($prof, $req->getParsedBody());
+        return $res->withJson($result);
+    });
 })->add(new \Middlewares\TeacherAuth());
 
 $app->group('/est', function() use ($app) {
@@ -97,6 +102,11 @@ $app->group('/est', function() use ($app) {
     $app->get('/materia/{id:[0-9]+}', function(Request $req, Response $res, $args) {
         $student = $req->getAttribute('student');
         $result = StudentC::getHomeworks($student, $args['id']);
+        return $res->withJson($result);
+    });
+    $app->post('/password', function(Request $req, Response $res) {
+        $student = $req->getAttribute('student');
+        $result = StudentC::changePassword($student, $req->getParsedBody());
         return $res->withJson($result);
     });
 })->add(new \Middlewares\StudentAuth());

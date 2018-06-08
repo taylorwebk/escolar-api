@@ -109,4 +109,13 @@ class StudentC
     ];
     return Response::OK('todo ok', 'Trabajos de '.$cursa->materia->nombre.' cargados.', $resp);
   }
+  public static function changePassword($student, $data) {
+    $fields = ['password'];
+    if (!Utils::validateData($data, $fields)) {
+      return Response::BadRequest(Utils::validateData($fields));
+    }
+    $student->password  = password_hash($data['password'], PASSWORD_DEFAULT);
+    $student->save();
+    return Response::OK('ok', 'Contraseña cambiada', null);
+  }
 }

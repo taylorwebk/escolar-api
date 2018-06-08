@@ -7,6 +7,7 @@ use \Models\Profesor;
 use \Models\Cursa;
 use \Models\Instruye;
 use \Models\Trabajo;
+use \Models\Estudiante;
 
 class TeacherC
 {
@@ -192,6 +193,28 @@ class TeacherC
       'Bienvenido/a, '.$prof->nombres,
       $tokenstr,
       $firstCourseParsed
+    );
+  }
+  public static function setGrades($prof, $data) {
+    $fields = ['notas'];
+    if (!Utils::validateData($data, $fields)) {
+        return Response::BadRequest(Utils::implodeFields($fields));
+    }
+    foreach ($data['notas'] as $idstudent => $trabajos) {
+        $student = Estudiante::find($idstudent);
+        foreach ($trabajos as $idtrabajo => $nota) {
+            if ($student->trabajos->contains($idtrabajo)) {
+                $student->trabajos()->updateExistingPivot($idtrabajo, ['nota' => $nota]);
+            } else {
+                $student->trabajos()->attach($idtrabajo, ['nota' => $nota]);
+            }
+        }
+    }
+    return Response::OKWhitToken(
+        'Todo OK',
+        'Notas guardadas',
+        Utils::generateToken($prof->id, $prof->ci),
+        null
     );
   }
 }
