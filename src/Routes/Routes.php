@@ -6,6 +6,11 @@ use \Controllers\StudentC;
 use \Controllers\TeacherC;
 
 $app->group('/admin', function () use ($app) {
+    $app->get('/stats', function(Request $req, Response $res) {
+        $admin = $req->getAttribute('admin');
+        $result = AdminC::getStats($admin);
+        return $res->withJson($result);
+    });
     $app->get('/cursos', function (Request $req, Response $res) {
         $admin = $req->getAttribute('admin');
         $result = AdminC::GetCourses($admin);

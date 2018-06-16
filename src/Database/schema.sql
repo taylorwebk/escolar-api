@@ -231,7 +231,7 @@ insert into materia (nombre, nombremin, campo) values
 ("A.P.", "Técnica, Tecnología General", "Ciencia, Tecnología y Producción"),
 ("MAT", "Matemática", "Ciencia, Tecnología y Producción"),
 ("T.V.", "Artes Plásticas y Visuales", "Comunidad y Sociedad"),
-("ING", "Lengua Extrangera", "Comunidad y Sociedad"),
+("ING", "Lengua Extranjera", "Comunidad y Sociedad"),
 ("E.F.", "Educación Física y Deportes", "Comunidad y Sociedad"),
 ("MUS", "Educación Musical", "Comunidad y Sociedad"),
 ("FIL", "Cosmovisiones Filosóficas y Psicología", "Cosmos y Pensamiento"),

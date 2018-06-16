@@ -15,9 +15,27 @@ use \Models\Profesor;
 use \Models\Periodo;
 use \Models\Horario;
 use \Models\Comunicado;
+use \Models\Trabajo;
 
 class AdminC
 {
+    public static function getStats($admin) {
+        $currentYear = Utils::getCurrentYear();
+        $currentBim = Utils::getCurrentBimester();
+        $resp = [
+            'inscritos'     => Inscribe::where('gestion_id', $currentYear->id)->count(),
+            'docentes'      => Profesor::count(),
+            'trabajos'      => Trabajo::where('bimestre_id', $currentBim->id)->count(),
+            'gestion'       => $currentYear->nro,
+            'bimestre'      => $currentBim->nro
+        ];
+        return Response::OKWhitToken(
+            'todo OK',
+            'ok',
+            Utils::generateToken($admin->id, $admin->ci),
+            $resp
+        );
+    }
     public static function Add($nombre, $appat, $apmat, $cel, $ci, $password)
     {
         Admin::create([
