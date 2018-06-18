@@ -1,6 +1,7 @@
 <?php
 namespace Controllers;
 
+use \Illuminate\Support\Collection;
 use \Models\Utils;
 use \Models\Response;
 use \Models\Profesor;
@@ -31,11 +32,11 @@ class TeacherC
       );
     }
     $yearId = Utils::getCurrentYear()->id;
-    $prof->instruyes->where('gestion_id', $yearId)->each(function($instruye) {
+    $prof->instruyescurrent->each(function($instruye) {
       $instruye->cursa->curso;
       $instruye->cursa->materia;
     });
-    $firstCourse = $prof->instruyes->first();
+    $firstCourse = $prof->instruyescurrent->first();
     if ($firstCourse) {
       $firstCourse->trabajos->each(function($trabajo) {
         $trabajo->bimestre;
@@ -43,7 +44,7 @@ class TeacherC
       $trabajosId = $firstCourse->trabajos->map(function($trabajo) {
         return $trabajo->id;
       });
-      $firstCourse->cursa->curso->inscribes->each(function($inscribe) use ($trabajosId) {
+      $firstCourse->cursa->curso->inscribescurrent->each(function($inscribe) use ($trabajosId) {
         $inscribe->estudiante->trabajos->whereIn('id', $trabajosId);
       });
       $firstCourseParsed = [
@@ -60,7 +61,7 @@ class TeacherC
             'bimestre'=> $trabajo->bimestre->nro 
           ];
         }),
-        'estudiantes' => $firstCourse->cursa->curso->inscribes->map(function($inscribe) {
+        'estudiantes' => $firstCourse->cursa->curso->inscribescurrent->map(function($inscribe) {
           return [
             'id'      => $inscribe->estudiante->id,
             'nombres' => $inscribe->estudiante->nombres,
@@ -76,7 +77,7 @@ class TeacherC
           ];
         })
       ];
-      $cursos = $prof->instruyes->map(function($instruye) {
+      $cursos = $prof->instruyescurrent->map(function($instruye) {
         return [
           'id'    => $instruye->cursa->id,
           'nro'   => $instruye->cursa->curso->nro,
@@ -154,7 +155,7 @@ class TeacherC
     $trabajosId = $firstCourse->trabajos->map(function($trabajo) {
       return $trabajo->id;
     });
-    $firstCourse->cursa->curso->inscribes->each(function($inscribe) use ($trabajosId) {
+    $firstCourse->cursa->curso->inscribescurrent->each(function($inscribe) use ($trabajosId) {
       $inscribe->estudiante->trabajos->whereIn('id', $trabajosId);
     });
     $firstCourseParsed = [
@@ -171,7 +172,7 @@ class TeacherC
           'bimestre'=> $trabajo->bimestre->nro 
         ];
       }),
-      'estudiantes' => $firstCourse->cursa->curso->inscribes->map(function($inscribe) {
+      'estudiantes' => $firstCourse->cursa->curso->inscribescurrent->map(function($inscribe) {
         return [
           'id'      => $inscribe->estudiante->id,
           'nombres' => $inscribe->estudiante->nombres,

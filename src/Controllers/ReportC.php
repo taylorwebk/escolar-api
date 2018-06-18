@@ -16,6 +16,7 @@ use \Models\Periodo;
 use \Models\Horario;
 use \Models\Comunicado;
 use \Models\Trabajo;
+use \Models\Gestion;
 
 class ReportC
 {
@@ -23,6 +24,71 @@ class ReportC
     $docs = Profesor::orderBy('appat')->get();
     return [
       'docentes' => $docs
+    ];
+  }
+  public static function courseList($year, $cursoId) {
+    $year = Gestion::where('nro', $year)->first();
+    $curso = Curso::find($cursoId);
+    $curso->inscribes->each(function($inscribe) {
+      $inscribe->estudiante;
+    });
+    $docs = [
+      'nro'   => $curso->nro,
+      'par'   => $curso->paralelo,
+      'gestion'=> $year,
+      'estudiantes' => $curso->inscribes->filter(function($inscribe) use ($year) {
+        return $inscribe->gestion_id == $year->id;
+      })->map(function($inscribe) {
+        return [
+          'nombres' => $inscribe->estudiante->nombres,
+          'appat'   => $inscribe->estudiante->appat,
+          'apmat'   => $inscribe->estudiante->apmat,
+          'ci'      => $inscribe->estudiante->ci
+        ];
+      })
+    ];
+    return $docs;
+  }
+  public static function subjectGrades($year, $cursoId, $materiaId) {
+    $year = Gestion::where('nro', $year)->first();
+    $curso = Curso::find($cursoId);
+    $materia = Materia::find($materiaId);
+    $cursa = Cursa::where([
+      ['curso_id', '=', $cursoId],
+      ['materia_id', '=', $materiaId]
+    ])->first();
+    $instruye = Instruye::where([
+      ['cursa_id', '=', $cursa->id],
+      ['gestion_id', '=', $year->id]
+    ])->first();
+    $prof = $instruye->profesor;
+    //return [$curso->inscribes->where('gestion_id', 2), $instruye->trabajos->where('id', 3)];
+    $bim1SubjectsIds = $instruye->trabajos->where('bimestre_id', 1)->map(function($trabajo) {return $trabajo->id;});
+    $bim2SubjectsIds = $instruye->trabajos->where('bimestre_id', 2)->map(function($trabajo) {return $trabajo->id;});
+    $bim3SubjectsIds = $instruye->trabajos->where('bimestre_id', 3)->map(function($trabajo) {return $trabajo->id;});
+    $bim4SubjectsIds = $instruye->trabajos->where('bimestre_id', 4)->map(function($trabajo) {return $trabajo->id;});
+    $estudiantes = $curso->inscribes->where('gestion_id', $year->id)->map(function($inscribe) use (
+      $bim1SubjectsIds, $bim2SubjectsIds, $bim3SubjectsIds, $bim4SubjectsIds
+    ) {
+      $estudiante = $inscribe->estudiante;
+      return [
+        'id'      => $inscribe->estudiante->id,
+        'nombre' => $estudiante->appat.' '.$estudiante->apmat.' '.$estudiante->nombres,
+        'bim1'    => round($estudiante->trabajos->whereIn('id', $bim1SubjectsIds)->avg('pivot.nota')),
+        'bim2'    => round($estudiante->trabajos->whereIn('id', $bim2SubjectsIds)->avg('pivot.nota')),
+        'bim3'    => round($estudiante->trabajos->whereIn('id', $bim3SubjectsIds)->avg('pivot.nota')),
+        'bim4'    => round($estudiante->trabajos->whereIn('id', $bim4SubjectsIds)->avg('pivot.nota'))
+      ];
+    });
+    return [
+      'curso'       => $curso->nro,
+      'gestion'     => $year->nro,
+      'paralelo'    => $curso->paralelo,
+      'profesor'    => $prof->appat.' '.$prof->apmat.' '.$prof->nombres,
+      'materian1'   => $materia->nombre,
+      'materian2'   => $materia->nombremin,
+      'materiac'    => $materia->campo,
+      'estudiantes' => $estudiantes
     ];
   }
 }

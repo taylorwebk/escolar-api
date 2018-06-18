@@ -129,10 +129,13 @@ $app->group('/reporteo', function() use ($app) {
         return $result;
     });
     $app->get('/curso/{year:[0-9]+}/{id:[0-9]+}', function(Request $req, Response $res, $args) {
-        $result = $this->view->render($res, 'Static.phtml');
+        $data = ReportC::courseList($args['year'], $args['id']);
+        $result = $this->view->render($res, 'Curso.phtml', $data);
         return $result;
     });
     $app->get('/materia/{year:[0-9]+}/{id:[0-9]+}/{mat:[0-9]+}', function(Request $req, Response $res, $args) {
+        $data = ReportC::subjectGrades($args['year'], $args['id'], $args['mat']);
+        return $res->withJson($data);
         $result = $this->view->render($res, 'Static.phtml');
         return $result;
     });
