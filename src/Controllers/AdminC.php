@@ -257,10 +257,10 @@ class AdminC
             return $mat->id;
         });
         $horarios = Horario::whereIn('cursa_id', $idscursa)->get();
-        $response['horario'] = $pers->reduce(function ($res, $per) use ($horarios) {
+        $response['horario'] = $pers->reduce(function ($res, $per) use ($horarios, $currYearId) {
             $materia = null;
             if ($horarios->contains('periodo_id', $per->id)) {
-                $materia = $horarios->where('periodo_id', $per->id)->last()->cursa->materia;
+                @ $materia = $horarios->where('periodo_id', $per->id)->where('gestion_id', $currYearId)->last()->cursa->materia;
             }
             $daykey = $per->dia->literal;
             $periodo = [
