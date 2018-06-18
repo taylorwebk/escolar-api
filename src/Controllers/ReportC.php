@@ -81,9 +81,9 @@ class ReportC
       ];
     });
     return [
-      'curso'       => $curso->nro,
+      'nro'       => $curso->nro,
       'gestion'     => $year->nro,
-      'paralelo'    => $curso->paralelo,
+      'par'    => $curso->paralelo,
       'profesor'    => $prof->appat.' '.$prof->apmat.' '.$prof->nombres,
       'materian1'   => $materia->nombre,
       'materian2'   => $materia->nombremin,

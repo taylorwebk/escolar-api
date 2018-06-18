@@ -135,8 +135,8 @@ $app->group('/reporteo', function() use ($app) {
     });
     $app->get('/materia/{year:[0-9]+}/{id:[0-9]+}/{mat:[0-9]+}', function(Request $req, Response $res, $args) {
         $data = ReportC::subjectGrades($args['year'], $args['id'], $args['mat']);
-        return $res->withJson($data);
-        $result = $this->view->render($res, 'Static.phtml');
+       // return $res->withJson($data);
+        $result = $this->view->render($res, 'Notas.phtml', $data);
         return $result;
     });
     $app->get('/boletin/{year:[0-9]+}/{id:[0-9]+}/{nros:[0-9]+}', function(Request $req, Response $res, $args) {
@@ -156,7 +156,7 @@ $app->group('/reporte', function() use ($app) {
         return Utils::toPdf($this->mpdf, $res, '/reporteo/curso/'.$args['year'].'/'.$args['id']);
     });
     $app->get('/materia/{year:[0-9]+}/{id:[0-9]+}/{mat:[0-9]+}', function(Request $req, Response $res, $args) {
-        return Utils::toPdf($this->mpdf, $res, '/reporteo/materia/'.$args['year'].'/'.$args['id']);
+        return Utils::toPdf($this->mpdf, $res, '/reporteo/materia/'.$args['year'].'/'.$args['id'].'/'.$args['mat']);
     });
     $app->get('/boletin/{year:[0-9]+}/{id:[0-9]+}/{nros:[0-9]+}', function(Request $req, Response $res, $args) {
         return Utils::toPdf($this->mpdf, $res, '/reporteo/boletin/'.$args['year'].'/'.$args['id'].'/'.$args['nros']);
