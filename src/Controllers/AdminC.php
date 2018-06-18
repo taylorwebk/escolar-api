@@ -16,6 +16,7 @@ use \Models\Periodo;
 use \Models\Horario;
 use \Models\Comunicado;
 use \Models\Trabajo;
+use \Models\Gestion;
 
 class AdminC
 {
@@ -475,5 +476,20 @@ class AdminC
     public static function deleteNotice($admin, $id) {
         Comunicado::find($id)->delete();
         return Response::OKWhitToken('ok', 'todo ok', Utils::generateToken($admin->id, $admin->ci), null);
+    }
+    public static function newBimester($admin) {
+        $bim = Utils::getCurrentBimester();
+        $year = Utils::getCurrentYear();
+        if ($bim->nro == 4) {
+            $year->bimestres()->updateExistingPivot($bim->id, ['active' => 0]);
+            $newYear = Gestion::create([
+                'nro'   => $year->nro + 1
+            ]);
+            $newYear->bimestres()->attach(1, ['active' => 1]);
+        } else {
+            $year->bimestres()->updateExistingPivot($bim->id, ['active' => 0]);
+            $year->bimestres()->attach($bim->id+1, ['active' => 1]);
+        }
+        return 'ok';
     }
 }

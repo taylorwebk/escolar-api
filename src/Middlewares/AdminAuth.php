@@ -10,11 +10,11 @@ use \Models\Response as Res;
 
 class AdminAuth
 {
-  private $logger;
+/*   private $logger;
   public function __construct($logger = null) {
     $this->logger = $logger;
   }
-
+ */
   public function __invoke (Request $req, Response $res, $next) {
     $tokenarr = $req->getHeader('Authorization');
     if (count($tokenarr) == 0) {

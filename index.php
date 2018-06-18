@@ -6,7 +6,7 @@ define("PROJECTPATH", __DIR__);
 define("IP", $_SERVER['SERVER_NAME']);
 define("PRIVATEKEY", "ISEEDEADPEOPLE");
 
-$dbconfig = parse_ini_file(PROJECTPATH . '/src/Database/configs.db');
+$dbconfig = parse_ini_file(PROJECTPATH . '/src/Database/config.db');
 
 $config['displayErrorDetails'] = true;
 $config['addContentLengthHeader'] = false;
@@ -32,12 +32,14 @@ $container = $app->getContainer();
     return $c['response']->withJson($data);
   };
 }; */
-$container['logger'] = function($c) {
+/* $container['logger'] = function($c) {
     $logger = new \Monolog\Logger('my_logger');
     $file_handler = new \Monolog\Handler\StreamHandler('./logs/app.log');
     $logger->pushHandler($file_handler);
     return $logger;
-};
+}; */
+$container['view'] = new \Slim\Views\PhpRenderer(PROJECTPATH.'/src/templates/');
+$container['mpdf'] = new \Mpdf\Mpdf(['tempDir'   => PROJECTPATH.'/files/temp']);
 
 $capsule = new Illuminate\Database\Capsule\Manager;
 $capsule->addConnection($container->get('settings')['db']);

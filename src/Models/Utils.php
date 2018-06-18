@@ -111,4 +111,12 @@ class Utils
         }        
         return false;
     }
+    public static function toPdf($mpdf, $res, $url) {
+        $html = \file_get_contents('http://'.IP.'/escolar-api'.$url);
+        $mpdf->writeHtml($html);
+        $res = $res->withHeader('Content-type', 'application/pdf');
+        $body = $res->getBody();
+        $body->write($mpdf->output());
+        return $res;
+    }
 }

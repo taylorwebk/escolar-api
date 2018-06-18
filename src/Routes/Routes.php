@@ -4,6 +4,8 @@ use \Psr\Http\Message\ResponseInterface as Response;
 use \Controllers\AdminC;
 use \Controllers\StudentC;
 use \Controllers\TeacherC;
+use \Controllers\ReportC;
+use \Models\Utils;
 
 $app->group('/admin', function () use ($app) {
     $app->get('/stats', function(Request $req, Response $res) {
@@ -78,7 +80,11 @@ $app->group('/admin', function () use ($app) {
         $result = AdminC::deleteNotice($admin, $args['id']);
         return $res->withJson($result);
     });
-})->add(new \Middlewares\AdminAuth($container['logger']));
+    $app->get('/bimestre', function(Request $req, Response $res) {
+        $result = AdminC::newBimester($req->getAttribute('admin'));
+        return $res->withJson($result);
+    });
+})->add(new \Middlewares\AdminAuth());
 
 $app->group('/prof', function() use ($app) {
     $app->post('/trabajo', function(Request $req, Response $res) {
@@ -115,6 +121,47 @@ $app->group('/est', function() use ($app) {
         return $res->withJson($result);
     });
 })->add(new \Middlewares\StudentAuth());
+
+$app->group('/reporteo', function() use ($app) {
+    $app->get('/docente', function($req, $res) {
+        $data = ReportC::teacherReport();
+        $result = $this->view->render($res, 'Docentes.phtml', $data);
+        return $result;
+    });
+    $app->get('/curso/{year:[0-9]+}/{id:[0-9]+}', function(Request $req, Response $res, $args) {
+        $result = $this->view->render($res, 'Static.phtml');
+        return $result;
+    });
+    $app->get('/materia/{year:[0-9]+}/{id:[0-9]+}/{mat:[0-9]+}', function(Request $req, Response $res, $args) {
+        $result = $this->view->render($res, 'Static.phtml');
+        return $result;
+    });
+    $app->get('/boletin/{year:[0-9]+}/{id:[0-9]+}/{nros:[0-9]+}', function(Request $req, Response $res, $args) {
+        $result = $this->view->render($res, 'Static.phtml');
+        return $result;
+    });
+    $app->get('/boletin/{year:[0-9]+}/{id:[0-9]+}', function(Request $req, Response $res, $args) {
+        $result = $this->view->render($res, 'Static.phtml');
+        return $result;
+    });
+});
+$app->group('/reporte', function() use ($app) {
+    $app->get('/docente', function(Request $req, Response $res) {
+        return Utils::toPdf($this->mpdf, $res, '/reporteo/docente');
+    });
+    $app->get('/curso/{year:[0-9]+}/{id:[0-9]+}', function(Request $req, Response $res, $args) {
+        return Utils::toPdf($this->mpdf, $res, '/reporteo/curso/'.$args['year'].'/'.$args['id']);
+    });
+    $app->get('/materia/{year:[0-9]+}/{id:[0-9]+}/{mat:[0-9]+}', function(Request $req, Response $res, $args) {
+        return Utils::toPdf($this->mpdf, $res, '/reporteo/materia/'.$args['year'].'/'.$args['id']);
+    });
+    $app->get('/boletin/{year:[0-9]+}/{id:[0-9]+}/{nros:[0-9]+}', function(Request $req, Response $res, $args) {
+        return Utils::toPdf($this->mpdf, $res, '/reporteo/boletin/'.$args['year'].'/'.$args['id'].'/'.$args['nros']);
+    });
+    $app->get('/boletin/{year:[0-9]+}/{id:[0-9]+}', function(Request $req, Response $res, $args) {
+        return Utils::toPdf($this->mpdf, $res, '/reporteo/boletin/'.$args['year'].'/'.$args['id']);
+    });
+});
 
 $app->get('/bugsbunny', function (Request $req, Response $res)
 {
