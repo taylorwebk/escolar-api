@@ -112,7 +112,7 @@ class Utils
         return false;
     }
     public static function toPdf($mpdf, $res, $url) {
-        $html = \file_get_contents('http://'.IP.'/escolar-api'.$url);
+        $html = \file_get_contents('https://'.IP.'/escolarapi'.$url);
         $mpdf->writeHtml($html);
         $res = $res->withHeader('Content-type', 'application/pdf');
         $body = $res->getBody();
