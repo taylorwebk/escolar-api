@@ -490,6 +490,11 @@ class AdminC
             $year->bimestres()->updateExistingPivot($bim->id, ['active' => 0]);
             $year->bimestres()->attach($bim->id+1, ['active' => 1]);
         }
-        return 'ok';
+        return Response::OKWhitToken(
+            'todo OK',
+            'ok',
+            Utils::generateToken($admin->id, $admin->ci),
+            null
+        );
     }
 }
