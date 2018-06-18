@@ -6,7 +6,7 @@ define("PROJECTPATH", __DIR__);
 define("IP", $_SERVER['SERVER_NAME']);
 define("PRIVATEKEY", "ISEEDEADPEOPLE");
 
-$dbconfig = parse_ini_file(PROJECTPATH . '/src/Database/config.db');
+$dbconfig = parse_ini_file(PROJECTPATH . '/src/Database/configs.db');
 
 $config['displayErrorDetails'] = true;
 $config['addContentLengthHeader'] = false;
