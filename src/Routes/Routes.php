@@ -144,7 +144,8 @@ $app->group('/reporteo', function() use ($app) {
         return $result;
     });
     $app->get('/boletin/{year:[0-9]+}/{id:[0-9]+}', function(Request $req, Response $res, $args) {
-        $result = $this->view->render($res, 'Static.phtml');
+        $data = ReportC::grades($args['year'], $args['id']);
+        $result = $this->view->render($res, 'Boletin.phtml', $data);
         return $result;
     });
 });

@@ -91,4 +91,49 @@ class ReportC
       'estudiantes' => $estudiantes
     ];
   }
+  public static function grades($year, $cursoId) {
+    $year = Gestion::where('nro', $year)->first();
+    $curso = Curso::find($cursoId);
+    $materias = Materia::with(['cursas' => function($query) use ($curso) {
+      $query->where('curso_id', '=', $curso->id);
+    }])->get()->filter(function($materia) {
+      return $materia->cursas->count() > 0;
+    });
+    $estudiantes = $curso->inscribes->where('gestion_id', $year->id)->where('curso_id', $curso->id)->map(
+      function($inscribe) {
+        return Estudiante::find($inscribe->estudiante_id);
+      }
+    );
+    $est = $estudiantes->map(function($estudiante) use ($materias, $curso, $year) {
+      $notas = $materias->map(function($materia) use ($estudiante, $curso, $year) {
+        $cursa = Cursa::where([
+          ['curso_id', '=', $curso->id],
+          ['materia_id', '=', $materia->id]
+        ])->first();
+        $instruye = Instruye::where([
+          ['cursa_id', '=', $cursa->id],
+          ['gestion_id', '=', $year->id]
+        ])->first();
+        $bim1SubjectsIds = $instruye->trabajos->where('bimestre_id', 1)->map(function($trabajo) {return $trabajo->id;});
+        $bim2SubjectsIds = $instruye->trabajos->where('bimestre_id', 2)->map(function($trabajo) {return $trabajo->id;});
+        $bim3SubjectsIds = $instruye->trabajos->where('bimestre_id', 3)->map(function($trabajo) {return $trabajo->id;});
+        $bim4SubjectsIds = $instruye->trabajos->where('bimestre_id', 4)->map(function($trabajo) {return $trabajo->id;});
+        return [
+          'nombre'  => $materia->nombre,
+          'campo'   => $materia->campo,
+          'bim1'    => round($estudiante->trabajos->whereIn('id', $bim1SubjectsIds)->avg('pivot.nota')),
+          'bim2'    => round($estudiante->trabajos->whereIn('id', $bim2SubjectsIds)->avg('pivot.nota')),
+          'bim3'    => round($estudiante->trabajos->whereIn('id', $bim3SubjectsIds)->avg('pivot.nota')),
+          'bim4'    => round($estudiante->trabajos->whereIn('id', $bim4SubjectsIds)->avg('pivot.nota'))
+        ];
+      });
+      return [
+        'nombre'  => $estudiante->appat.' '.$estudiante->apmat.' '.$estudiante->nombres,
+        'curso'   => $curso->nro,
+        'paralelo'=> $curso->paralelo,
+        'notas'   => $notas
+      ];
+    });
+    return ['estudiantes' => $est->values()];
+  }
 }

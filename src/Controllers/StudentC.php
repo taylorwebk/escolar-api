@@ -93,7 +93,7 @@ class StudentC
           $trabajo->estudiantes;
         });
         $trabajos = $instruye->trabajos->map(function($trabajo) use ($student) {
-          $nota = $trabajo->estudiantes->where('id', $student->id)->first()->pivot->nota;
+          @$nota = $trabajo->estudiantes->where('id', $student->id)->first()->pivot->nota;
           return [
             "nombre"    => $trabajo->nombre,
             "fecha"     => $trabajo->fecha,
