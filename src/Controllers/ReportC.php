@@ -96,7 +96,7 @@ class ReportC
     $curso = Curso::find($cursoId);
     $materias = Materia::with(['cursas' => function($query) use ($curso) {
       $query->where('curso_id', '=', $curso->id);
-    }])->get()->filter(function($materia) {
+    }])->orderBy('campo')->get()->filter(function($materia) {
       return $materia->cursas->count() > 0;
     });
     $estudiantes = $curso->inscribes->where('gestion_id', $year->id)->where('curso_id', $curso->id)->map(
@@ -135,5 +135,32 @@ class ReportC
       ];
     });
     return ['estudiantes' => $est->values()];
+  }
+  public static function bestStudents() {
+    $year = Utils::getCurrentYear();
+    $courses = Curso::where('estado', 1)->orderBy('nro')->orderBy('paralelo')->get();
+    $bestStudents = $courses->map(function ($course) use ($year) {
+      $estudiantes = $course->inscribes->where('gestion_id', $year->id)->map(function($inscribe) use ($year) {
+        $est = $inscribe->estudiante;
+        $instruyeIds = Instruye::select('id')->where('gestion_id', $year->id)->get()->map(function ($instruye) {
+          return $instruye->id;
+        });
+        $prom = $est->trabajos->whereIn('instruye_id', $instruyeIds)->avg('pivot.nota');
+        return [
+          'nombres' => $est->nombres,
+          'apps'    => $est->appat.' '.$est->apmat,
+          'prom'    => round($prom, 2)
+        ];
+      });
+      $sorted = $estudiantes->sortByDesc('prom')->take(3)->values()->all();
+      return [
+        'curso'     => [
+          'nro'       => $course->nro,
+          'paralelo'  => $course->paralelo
+        ],
+        'estudiante' => $sorted
+      ];
+    });
+    return $bestStudents;
   }
 }

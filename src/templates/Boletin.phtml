@@ -12,156 +12,97 @@
   table {
     border-collapse: collapse;
     border-spacing: 0;
+    margin-top: 15px;
+    width: 100%;
+    page-break-inside: avoid;
   }
   .datos{
     padding-left: 15px;
-    font-size: 20px;
+    font-size: 17px;
   }
   </style>
 </head>
 <body>
+  <h2>
+    Boletines <?= $estudiantes[0]['curso'] ?>° de Secundaria, Paralelo <?= $estudiantes[0]['paralelo'] ?>
+  </h2>
   <?php
     foreach($estudiantes as $estudiante):
   ?>
   <table>
     <tr>
       <td class="datos" colspan="7">
-        <h4 class="center">San Sebasti&aacute;n "B"</h4>
+        <h5 class="center">San Sebasti&aacute;n "B"</h5>
         <p><b>Nombre: </b><?= $estudiante['nombre'] ?></p>
         <p><b>Curso: </b><?= $estudiante['curso'] ?>° de Secundaria, paralelo <?= $estudiante['paralelo'] ?></p>
       </td>
     </tr>
     <tr>
-      <td>Campos Saberes y Conocimientos</td>
-      <td>&Aacute;REAS CURRICULARES</td>
-      <td>Primer Bimestre</td>
-      <td>Segundo Bimestre</td>
-      <td>Tercer Bimestre</td>
-      <td>Cuarto Bimestre</td>
-      <td>NOTA FINAL</td>
+      <td><b>Campos Saberes y Conocimientos</b></td>
+      <td><b>&Aacute;REAS CURRICULARES</b></td>
+      <td><b>Primer Bimestre</b></td>
+      <td><b>Segundo Bimestre</b></td>
+      <td><b>Tercer Bimestre</b></td>
+      <td><b>Cuarto Bimestre</b></td>
+      <td><b>NOTA FINAL</b></td>
     </tr>
     <?php
+      $campo = $estudiante['notas'][0]['campo'];
+      $array = [];
+      $cont = 0;
+      foreach($estudiante['notas'] as $nota):
+        if ($nota['campo'] != $campo) {
+          array_push($array, $cont);
+          $campo = $nota['campo'];
+          $cont = 1;
+        } else {
+          $cont++;
+        }
+      endforeach;
+      array_push($array, $cont);
+    ?>
+    <?php
+      $campo = 'narana';
+      $cont = 0;
+      $nroMat = count($estudiante['notas']);
+      $sum1Bim = 0;
+      $sum2Bim = 0;
+      $sum3Bim = 0;
+      $sum4Bim = 0;
+      $sumFinal = 0;
       foreach($estudiante['notas'] as $nota):
     ?>
     <tr>
-      <td><?= $nota['campo'] ?></td>
+      <?php
+        if($nota['campo'] != $campo) {
+          echo '<td rowspan="'.$array[$cont].'">' . $nota['campo'] . '</td>';
+          $campo = $nota['campo'];
+          $cont++;
+        }
+        $final = round((intval($nota['bim1'])+intval($nota['bim2'])+intval($nota['bim3'])+intval($nota['bim4']))/4);
+        $sum1Bim += $nota['bim1'];
+        $sum2Bim += $nota['bim2'];
+        $sum3Bim += $nota['bim3'];
+        $sum4Bim += $nota['bim4'];
+        $sumFinal += $final;
+      ?>
       <td><?= $nota['nombre'] ?></td>
       <td><?= $nota['bim1'] ?></td>
       <td><?= $nota['bim2'] ?></td>
       <td><?= $nota['bim3'] ?></td>
       <td><?= $nota['bim4'] ?></td>
-      <td>promedio</td>
+      <td><b><?= $final ?></b></td>
     </tr>
     <?php
       endforeach;
     ?>
-<!--     <tr>
-      <td rowspan="6">COMUNIDAD Y SOCIEDAD</td>
-      <td>Comunicaci&oacute;n y Lenguajes</td>
-      <td>80</td>
-      <td>80</td>
-      <td>50</td>
-      <td>20</td>
-      <td>55</td>
-    </tr>
-    <tr>
-      <td>Lengua Extranjera</td>
-      <td>50</td>
-      <td>60</td>
-      <td>70</td>
-      <td>80</td>
-      <td>65</td>
-    </tr>
-    <tr>
-      <td>Ciencias Sociales</td>
-      <td>70</td>
-      <td>70</td>
-      <td>70</td>
-      <td>70</td>
-      <td>70</td>
-    </tr>
-    <tr>
-      <td>Educaci&oacute;n F&iacute;sica y Deportes</td>
-      <td>60</td>
-      <td>60</td>
-      <td>60</td>
-      <td>60</td>
-      <td>60</td>
-    </tr>
-    <tr>
-      <td>Educaci&oacute;n Musical</td>
-      <td>65</td>
-      <td>65</td>
-      <td>65</td>
-      <td>65</td>
-      <td>65</td>
-    </tr>
-    <tr>
-      <td>Artes Pl&aacute;stica y Visuales</td>
-      <td>70</td>
-      <td>70</td>
-      <td>70</td>
-      <td>70</td>
-      <td>70</td>
-    </tr>
-    <tr>
-      <td rowspan="2">CIENCIA TECNOLOG&Iacute;A Y PRODUCCI&Oacute;N</td>
-      <td>Matem&aacute;tica</td>
-      <td>75</td>
-      <td>75</td>
-      <td>75</td>
-      <td>75</td>
-      <td>75</td>
-    </tr>
-    <tr>
-      <td>T&eacute;cnica Tecnol&oacute;gica</td>
-      <td>70</td>
-      <td>70</td>
-      <td>70</td>
-      <td>70</td>
-      <td>70</td>
-    </tr>
-    <tr>
-      <td rowspan="2">VIDA TIERRA Y TERRITORIO</td>
-      <td>Biolog&iacute;a - Geogr&aacute;fica</td>
-      <td>80</td>
-      <td>80</td>
-      <td>80</td>
-      <td>80</td>
-      <td>80</td>
-    </tr>
-    <tr>
-      <td>F&iacute;sica - Qu&iacute;mica</td>
-      <td>85</td>
-      <td>85</td>
-      <td>85</td>
-      <td>85</td>
-      <td>85</td>
-    </tr>
-    <tr>
-      <td rowspan="2">COSMOS Y PENSAMIENTO</td>
-      <td>Filosof&iacute;a</td>
-      <td>90</td>
-      <td>90</td>
-      <td>90</td>
-      <td>90</td>
-      <td>90</td>
-    </tr>
-    <tr>
-      <td>Valores Espiritualidades y Religiones</td>
-      <td>95</td>
-      <td>95</td>
-      <td>95</td>
-      <td>95</td>
-      <td>95</td>
-    </tr> -->
     <tr>
       <td colspan="2">PROMEDIOS</td>
-      <td>80</td>
-      <td>80</td>
-      <td>80</td>
-      <td>80</td>
-      <td>80</td>
+      <td><?= round($sum1Bim/$nroMat, 2) ?></td>
+      <td><?= round($sum2Bim/$nroMat, 2) ?></td>
+      <td><?= round($sum3Bim/$nroMat, 2) ?></td>
+      <td><?= round($sum4Bim/$nroMat, 2) ?></td>
+      <td><?= round($sumFinal/$nroMat, 2) ?></td>
     </tr>
   </table>
   <br>

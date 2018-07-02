@@ -188,3 +188,7 @@ $app->get('/comunicados', function(Request $req, Response $res) {
     $result = AdminC::getNotices();
     return $res->withJson($result);
 });
+$app->get('/mejores', function(Request $req, Response $res) {
+    $result = ReportC::bestStudents();
+    return $res->withJson($result);
+});
