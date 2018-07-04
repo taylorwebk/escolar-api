@@ -218,4 +218,19 @@ class TeacherC
         null
     );
   }
+  public static function updateProfile($prof, $data) {
+    $fields = ['dir', 'password'];
+    if (!Utils::validateData($data, $fields)) {
+      return Response::BadRequest(Utils::implodeFields($fields));
+    }
+    $prof->dir = $data['dir'];
+    $prof->password = password_hash($data['password'], PASSWORD_DEFAULT);
+    $prof->save();
+    return Response::OKWhitToken(
+      'Todo OK',
+      'Datos actualizados',
+      Utils::generateToken($prof->id, $prof->ci),
+      $prof
+    );
+  }
 }

@@ -102,6 +102,11 @@ $app->group('/prof', function() use ($app) {
         $result = TeacherC::setGrades($prof, $req->getParsedBody());
         return $res->withJson($result);
     });
+    $app->put('/perfil', function(Request $req, Response $res) {
+        $prof = $req->getAttribute('prof');
+        $result = TeacherC::updateProfile($prof, $req->getParsedBody());
+        return $res->withJson($result);
+    });
 })->add(new \Middlewares\TeacherAuth());
 
 $app->group('/est', function() use ($app) {
