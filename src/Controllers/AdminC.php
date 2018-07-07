@@ -48,6 +48,21 @@ class AdminC
                 'password'  =>  password_hash($password, PASSWORD_DEFAULT)
         ]);
     }
+    public static function updateProfile($admin, $data) {
+        $fields = ['cel', 'password'];
+        if (!Utils::validateData($data, $fields)) {
+            return Response::BadRequest(Utils::implodeFields($fields));
+        }
+        $admin->cel = $data['cel'];
+        $admin->password = password_hash($data['password'], PASSWORD_DEFAULT);
+        $admin->save();
+        return Response::OKWhitToken(
+            'Todo OK',
+            'Datos actualizados',
+            Utils::generateToken($admin->id, $admin->ci),
+            $admin
+        );
+    }
     public static function Login($data)
     {
         $fields = ['ci', 'password'];

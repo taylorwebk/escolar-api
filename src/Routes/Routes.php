@@ -84,6 +84,11 @@ $app->group('/admin', function () use ($app) {
         $result = AdminC::newBimester($req->getAttribute('admin'));
         return $res->withJson($result);
     });
+    $app->put('/perfil', function(Request $req, Response $res) {
+        $prof = $req->getAttribute('admin');
+        $result = AdminC::updateProfile($admin, $req->getParsedBody());
+        return $res->withJson($result);
+    });
 })->add(new \Middlewares\AdminAuth());
 
 $app->group('/prof', function() use ($app) {
