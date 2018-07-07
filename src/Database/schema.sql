@@ -224,20 +224,20 @@ create table comunicado(
 );
 -- Insertamos las materias
 insert into materia (nombre, nombremin, campo) values
-("REL", "Valores, Espiritualidad y Religiones", "Cosmos y Pensamiento"),
-("LEN", "Comunicación y Lenguajes", "Comunidad y Sociedad"),
-("SOC", "Ciencias Sociales", "Comunidad y Sociedad"),
-("BIO", "Biología Geografía", "Vida, Tierra y Territorio"),
-("A.P.", "Técnica, Tecnología General", "Ciencia, Tecnología y Producción"),
-("MAT", "Matemática", "Ciencia, Tecnología y Producción"),
-("T.V.", "Artes Plásticas y Visuales", "Comunidad y Sociedad"),
-("ING", "Lengua Extranjera", "Comunidad y Sociedad"),
-("E.F.", "Educación Física y Deportes", "Comunidad y Sociedad"),
-("MUS", "Educación Musical", "Comunidad y Sociedad"),
-("FIL", "Cosmovisiones Filosóficas y Psicología", "Cosmos y Pensamiento"),
-("LIT", "Comunicación y Lenguajes", "Comunidad y Sociedad"),
-("FI-QUI", "Física Química", "Vida, Tierra y Territorio"),
-("FIS", "Física Química", "Vida, Tierra y Territorio");
+("Religión", "Valores, Espiritualidad y Religiones", "Cosmos y Pensamiento"),
+("Lenguaje", "Comunicación y Lenguajes", "Comunidad y Sociedad"),
+("Sociales", "Ciencias Sociales", "Comunidad y Sociedad"),
+("Biología", "Biología Geografía", "Vida, Tierra y Territorio"),
+("Artes Plásticas", "Técnica, Tecnología General", "Ciencia, Tecnología y Producción"),
+("Matemáticas", "Matemática", "Ciencia, Tecnología y Producción"),
+("Técnica Vocacional", "Artes Plásticas y Visuales", "Comunidad y Sociedad"),
+("Inglés", "Lengua Extranjera", "Comunidad y Sociedad"),
+("Educación Física", "Educación Física y Deportes", "Comunidad y Sociedad"),
+("Música", "Educación Musical", "Comunidad y Sociedad"),
+("Filosofía", "Cosmovisiones Filosóficas y Psicología", "Cosmos y Pensamiento"),
+("Literatura", "Comunicación y Lenguajes", "Comunidad y Sociedad"),
+("Física-Química", "Física Química", "Vida, Tierra y Territorio"),
+("Física", "Física Química", "Vida, Tierra y Territorio");
 insert into dia (literal) values
 ("Lunes"), ("Martes"), ("Miércoles"), ("Jueves"), ("Viernes"), ("Sábado");
 insert into curso (nro, paralelo) values
