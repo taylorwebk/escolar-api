@@ -83,6 +83,7 @@ class TeacherC
           'nro'   => $instruye->cursa->curso->nro,
           'par'   => $instruye->cursa->curso->paralelo,
           'mat'   => $instruye->cursa->materia->nombre,
+          'matid' => $instruye->cursa->materia->id,
           'campo' => $instruye->cursa->materia->campo
         ];
       });
