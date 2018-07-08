@@ -54,7 +54,9 @@ class AdminC
             return Response::BadRequest(Utils::implodeFields($fields));
         }
         $admin->cel = $data['cel'];
-        $admin->password = password_hash($data['password'], PASSWORD_DEFAULT);
+        if ($data['password'] != '') {
+            $admin->password = password_hash($data['password'], PASSWORD_DEFAULT);
+        }
         $admin->save();
         return Response::OKWhitToken(
             'Todo OK',

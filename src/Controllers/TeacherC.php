@@ -225,7 +225,9 @@ class TeacherC
       return Response::BadRequest(Utils::implodeFields($fields));
     }
     $prof->dir = $data['dir'];
-    $prof->password = password_hash($data['password'], PASSWORD_DEFAULT);
+    if ($data['password'] != '') {
+      $prof->password = password_hash($data['password'], PASSWORD_DEFAULT);
+    }
     $prof->save();
     return Response::OKWhitToken(
       'Todo OK',
